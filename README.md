@@ -8,7 +8,7 @@
 
 <div align="center">
 
-**[Continue](https://docs.continue.dev) is the leading open-source AI code assistant. You can connect any models and any context to build custom autocomplete and chat experiences inside [VS Code](https://marketplace.visualstudio.com/items?itemName=Continue.continue) and [JetBrains](https://plugins.jetbrains.com/plugin/22707-continue-extension)**
+**[Continue](https://docs.continue.dev) 是领先的开源 AI 代码助手。您可以连接任何模型和任何上下文，在 [VS Code](https://marketplace.visualstudio.com/items?itemName=Continue.continue) 和 [JetBrains](https://plugins.jetbrains.com/plugin/22707-continue-extension) 中构建自定义自动补全和聊天体验。**
 
 </div>
 
@@ -26,40 +26,40 @@
 
 <p></p>
 
-## Chat
+## 聊天
 
-[Chat](https://continue.dev/docs/chat/how-to-use-it) makes it easy to ask for help from an LLM without needing to leave the IDE
+[聊天](https://continue.dev/docs/chat/how-to-use-it) 让您无需离开 IDE 就能轻松向 LLM 寻求帮助
 
 ![chat](docs/static/img/chat.gif)
 
-## Autocomplete
+## 自动补全
 
-[Autocomplete](https://continue.dev/docs/autocomplete/how-to-use-it) provides inline code suggestions as you type
+[自动补全](https://continue.dev/docs/autocomplete/how-to-use-it) 在您输入时提供内联代码建议
 
 ![autocomplete](docs/static/img/autocomplete.gif)
 
-## Edit
+## 编辑
 
-[Edit](https://continue.dev/docs/edit/how-to-use-it) is a convenient way to modify code without leaving your current file
+[编辑](https://continue.dev/docs/edit/how-to-use-it) 是一种无需离开当前文件即可修改代码的便捷方式
 
 ![edit](docs/static/img/edit.gif)
 
-## Actions
+## 操作
 
-[Actions](https://continue.dev/docs/actions/how-to-use-it) are shortcuts for common use cases.
+[操作](https://continue.dev/docs/actions/how-to-use-it) 是常见用例的快捷方式。
 
 ![actions](docs/static/img/actions.gif)
 
 </div>
 
-## Getting Started
+## 入门
 
-Learn about how to install and use Continue in the docs [here](https://continue.dev/docs/getting-started/install)
+在文档中了解如何安装和使用 Continue [这里](https://continue.dev/docs/getting-started/install)
 
-## Contributing
+## 贡献
 
-Check out the [contribution ideas board](https://github.com/orgs/continuedev/projects/2), read the [contributing guide](https://github.com/continuedev/continue/blob/main/CONTRIBUTING.md), and join [#contribute on Discord](https://discord.gg/vapESyrFmJ)
+查看 [贡献想法板](https://github.com/orgs/continuedev/projects/2)，阅读 [贡献指南](https://github.com/continuedev/continue/blob/main/CONTRIBUTING.md)，并加入 Discord 上的 [#contribute](https://discord.gg/vapESyrFmJ)
 
-## License
+## 许可证
 
 [Apache 2.0 © 2023 Continue Dev, Inc.](./LICENSE)
