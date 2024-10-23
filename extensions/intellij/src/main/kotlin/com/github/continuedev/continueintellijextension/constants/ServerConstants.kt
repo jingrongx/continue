@@ -31,26 +31,26 @@ const val DEFAULT_CONFIG = """
   "slashCommands": [
     {
       "name": "edit",
-      "description": "Edit highlighted code"
+      "description": "编辑高亮代码"
     },
     {
       "name": "comment",
-      "description": "Write comments for the highlighted code"
+      "description": "为高亮代码写注释"
     },
     {
       "name": "share",
-      "description": "Export the current chat session to markdown"
+      "description": "将当前聊天会话导出为markdown"
     },
     {
       "name": "cmd",
-      "description": "Generate a shell command"
+      "description": "生成一个shell命令"
     }
   ],
   "customCommands": [
     {
       "name": "test",
-      "prompt": "{{{ input }}}\n\nWrite a comprehensive set of unit tests for the selected code. It should setup, run tests that check for correctness including important edge cases, and teardown. Ensure that the tests are complete and sophisticated. Give the tests just as chat output, don't edit any file.",
-      "description": "Write unit tests for highlighted code"
+      "prompt": "{{{ input }}}\n\n为选定的代码编写一套全面的单元测试。它应该设置、运行测试以检查正确性，包括重要的边界情况，并进行拆卸。确保测试完整且复杂。仅以聊天输出的形式给出测试，不要编辑任何文件。",
+      "description": "为高亮代码编写单元测试"
     }
   ],
   "contextProviders": [

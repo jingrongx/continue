@@ -22,7 +22,7 @@ class ContinuePluginToolWindowFactory : ToolWindowFactory, DumbAware {
         val titleActions = mutableListOf<AnAction>()
         createTitleActions(titleActions)
 
-        // Add MaximizeToolWindow action
+        // 添加 MaximizeToolWindow 动作
         val action = ActionManager.getInstance().getAction("MaximizeToolWindow")
         if (action != null) {
             titleActions.add(action)
@@ -50,7 +50,7 @@ class ContinuePluginToolWindowFactory : ToolWindowFactory, DumbAware {
 
         val browser: ContinueBrowser by lazy {
             val url = "http://continue/index.html";
-            // Use to get hot-reloading in local development
+            // 用于在本地开发中实现热重载
             // val url = "http://localhost:5173/jetbrains_index.html";
 
             val browser = ContinueBrowser(project, url)

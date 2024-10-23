@@ -1,42 +1,40 @@
 @rem
-@rem Copyright 2015 the original author or authors.
+@rem 版权所有 2015 原作者或作者。
 @rem
-@rem Licensed under the Apache License, Version 2.0 (the "License");
-@rem you may not use this file except in compliance with the License.
-@rem You may obtain a copy of the License at
+@rem 根据 Apache 许可证，版本 2.0（“许可证”）授权；
+@rem 除非遵守许可证，否则您不得使用此文件。
+@rem 您可以在以下网址获取许可证副本：
 @rem
 @rem      https://www.apache.org/licenses/LICENSE-2.0
 @rem
-@rem Unless required by applicable law or agreed to in writing, software
-@rem distributed under the License is distributed on an "AS IS" BASIS,
-@rem WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-@rem See the License for the specific language governing permissions and
-@rem limitations under the License.
+@rem 除非适用法律要求或书面同意，否则按“原样”分发
+@rem 本软件不附带任何明示或暗示的担保或条件。
+@rem 请参阅许可证以了解管理权限和限制。
 @rem
 
 @if "%DEBUG%"=="" @echo off
 @rem ##########################################################################
 @rem
-@rem  Gradle startup script for Windows
+@rem  Windows 的 Gradle 启动脚本
 @rem
 @rem ##########################################################################
 
-@rem Set local scope for the variables with windows NT shell
+@rem 为 Windows NT shell 设置局部变量范围
 if "%OS%"=="Windows_NT" setlocal
 
 set DIRNAME=%~dp0
 if "%DIRNAME%"=="" set DIRNAME=.
-@rem This is normally unused
+@rem 这通常不使用
 set APP_BASE_NAME=%~n0
 set APP_HOME=%DIRNAME%
 
-@rem Resolve any "." and ".." in APP_HOME to make it shorter.
+@rem 解析 APP_HOME 中的任何 "." 和 ".." 以缩短路径。
 for %%i in ("%APP_HOME%") do set APP_HOME=%%~fi
 
-@rem Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+@rem 在此处添加默认 JVM 选项。您也可以使用 JAVA_OPTS 和 GRADLE_OPTS 将 JVM 选项传递给此脚本。
 set DEFAULT_JVM_OPTS="-Xmx64m" "-Xms64m"
 
-@rem Find java.exe
+@rem 查找 java.exe
 if defined JAVA_HOME goto findJavaFromJavaHome
 
 set JAVA_EXE=java.exe
@@ -44,10 +42,10 @@ set JAVA_EXE=java.exe
 if %ERRORLEVEL% equ 0 goto execute
 
 echo.
-echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+echo 错误: JAVA_HOME 未设置，并且在您的 PATH 中找不到 'java' 命令。
 echo.
-echo Please set the JAVA_HOME variable in your environment to match the
-echo location of your Java installation.
+echo 请在您的环境中设置 JAVA_HOME 变量以匹配
+echo 您的 Java 安装位置。
 
 goto fail
 
@@ -58,29 +56,27 @@ set JAVA_EXE=%JAVA_HOME%/bin/java.exe
 if exist "%JAVA_EXE%" goto execute
 
 echo.
-echo ERROR: JAVA_HOME is set to an invalid directory: %JAVA_HOME%
+echo 错误: JAVA_HOME 设置为无效目录: %JAVA_HOME%
 echo.
-echo Please set the JAVA_HOME variable in your environment to match the
-echo location of your Java installation.
+echo 请在您的环境中设置 JAVA_HOME 变量以匹配
+echo 您的 Java 安装位置。
 
 goto fail
 
 :execute
-@rem Setup the command line
+@rem 设置命令行
 
 set CLASSPATH=%APP_HOME%\gradle\wrapper\gradle-wrapper.jar
 
-
-@rem Execute Gradle
+@rem 执行 Gradle
 "%JAVA_EXE%" %DEFAULT_JVM_OPTS% %JAVA_OPTS% %GRADLE_OPTS% "-Dorg.gradle.appname=%APP_BASE_NAME%" -classpath "%CLASSPATH%" org.gradle.wrapper.GradleWrapperMain %*
 
 :end
-@rem End local scope for the variables with windows NT shell
+@rem 结束 Windows NT shell 的局部变量范围
 if %ERRORLEVEL% equ 0 goto mainEnd
 
 :fail
-rem Set variable GRADLE_EXIT_CONSOLE if you need the _script_ return code instead of
-rem the _cmd.exe /c_ return code!
+rem 如果您需要 _script_ 返回代码而不是 _cmd.exe /c_ 返回代码，请设置变量 GRADLE_EXIT_CONSOLE！
 set EXIT_CODE=%ERRORLEVEL%
 if %EXIT_CODE% equ 0 set EXIT_CODE=1
 if not ""=="%GRADLE_EXIT_CONSOLE%" exit %EXIT_CODE%

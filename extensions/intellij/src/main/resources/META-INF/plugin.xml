@@ -1,11 +1,11 @@
-<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<!-- 插件配置文件。阅读更多：https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <id>com.github.continuedev.continueintellijextension</id>
     <name>Continue</name>
     <vendor>continue-dev</vendor>
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.modules.json</depends>
-    <!-- com.intellij.openapi.module.ModuleManager.Companion is only available since this build -->
+    <!-- com.intellij.openapi.module.ModuleManager.Companion 仅在此构建版本中可用 -->
     <idea-version since-build="223.7571.182"/>
 
     <extensions defaultExtensionNs="JavaScript.JsonSchema">
@@ -45,8 +45,8 @@
     <actions>
         <action class="com.github.continuedev.continueintellijextension.editor.InlineEditAction"
                 id="continue.inlineEdit"
-                description="Inline Edit"
-                text="Inline Edit">
+                description="内联编辑"
+                text="内联编辑">
             <keyboard-shortcut keymap="$default"
                                first-keystroke="ctrl I"/>
             <keyboard-shortcut keymap="Mac OS X"
@@ -55,8 +55,8 @@
 
         <action class="com.github.continuedev.continueintellijextension.editor.ToggleInlineEditAction"
                 id="continue.toggleInlineEdit"
-                description="Toggle Inline Edit"
-                text="Toggle Inline Edit">
+                description="切换内联编辑"
+                text="切换内联编辑">
             <keyboard-shortcut keymap="$default"
                                first-keystroke="ctrl shift I"/>
             <keyboard-shortcut keymap="Mac OS X"
@@ -65,7 +65,7 @@
 
         <action id="continue.acceptDiff"
                 class="com.github.continuedev.continueintellijextension.actions.AcceptDiffAction"
-                text="Accept Diff" description="Accept Diff">
+                text="接受差异" description="接受差异">
             <keyboard-shortcut keymap="$default"
                                first-keystroke="alt shift Y"/>
             <keyboard-shortcut keymap="Mac OS X"
@@ -73,7 +73,7 @@
         </action>
         <action id="continue.rejectDiff"
                 class="com.github.continuedev.continueintellijextension.actions.RejectDiffAction"
-                text="Reject Diff" description="Reject Diff">
+                text="拒绝差异" description="拒绝差异">
             <keyboard-shortcut keymap="$default"
                                first-keystroke="alt shift N"/>
             <keyboard-shortcut keymap="Mac OS X"
@@ -81,7 +81,7 @@
         </action>
         <action id="continue.quickTextEntry"
                 class="com.github.continuedev.continueintellijextension.actions.QuickTextEntryAction"
-                text="Quick Text Entry" description="Quick Text Entry">
+                text="快速文本输入" description="快速文本输入">
             <keyboard-shortcut keymap="$default"
                                first-keystroke="alt shift J"/>
             <keyboard-shortcut keymap="Mac OS X"
@@ -89,15 +89,15 @@
         </action>
         <action id="continue.viewLogs"
                 class="com.github.continuedev.continueintellijextension.actions.ViewLogsAction"
-                text="View Continue Server Logs"
-                description="View Continue Server Logs">
-            <!-- No shortcut defined -->
+                text="查看 Continue 服务器日志"
+                description="查看 Continue 服务器日志">
+            <!-- 未定义快捷键 -->
         </action>
        
         <action id="continue.focusContinueInputWithoutClear"
                 class="com.github.continuedev.continueintellijextension.actions.FocusContinueInputWithoutClearAction"
-                text="Add selected code to context"
-                description="Focus Continue Input With Edit">
+                text="将选定代码添加到上下文"
+                description="聚焦 Continue 输入不清除">
             <keyboard-shortcut keymap="$default"
                                first-keystroke="ctrl shift J"/>
             <keyboard-shortcut keymap="Mac OS X"
@@ -109,21 +109,21 @@
 
         <action id="continue.newContinueSession"
                 class="com.github.continuedev.continueintellijextension.actions.NewContinueSessionAction"
-                text="Start New Continue Session"
+                text="开始新 Continue 会话"
                 icon="AllIcons.General.Add"
-                description="Start New Continue Session">
+                description="开始新 Continue 会话">
         </action>
 
         <action id="continue.viewHistory"
                 class="com.github.continuedev.continueintellijextension.actions.ViewHistoryAction"
-                text="View History"
+                text="查看历史"
                 icon="AllIcons.Vcs.History"
-                description="View History">
+                description="查看历史">
         </action>
         <action id="continue.focusContinueInput"
                 class="com.github.continuedev.continueintellijextension.actions.FocusContinueInputAction"
-                text="Add selected code to context"
-                description="Focus Continue Input">
+                text="将选定代码添加到上下文"
+                description="聚焦 Continue 输入">
             <keyboard-shortcut keymap="$default"
                                first-keystroke="ctrl J"/>
             <keyboard-shortcut keymap="Mac OS X"
@@ -138,23 +138,22 @@
 
         <action id="com.github.continuedev.continueintellijextension.autocomplete.AcceptAutocompleteAction"
                 class="com.github.continuedev.continueintellijextension.autocomplete.AcceptAutocompleteAction"
-                text="Accept Autocomplete Suggestion" description="Accept Autocomplete Suggestion">
+                text="接受自动完成建议" description="接受自动完成建议">
             <keyboard-shortcut keymap="$default" first-keystroke="TAB"/>
             <keyboard-shortcut keymap="Mac OS X" first-keystroke="TAB"/>
         </action>
         <action id="com.github.continuedev.continueintellijextension.autocomplete.CancelAutocompleteAction"
                 class="com.github.continuedev.continueintellijextension.autocomplete.CancelAutocompleteAction"
-                text="Cancel Autocomplete Suggestion" description="Cancel Autocomplete Suggestion">
+                text="取消自动完成建议" description="取消自动完成建议">
             <keyboard-shortcut keymap="$default" first-keystroke="ESCAPE"/>
         </action>
         <action id="com.github.continuedev.continueintellijextension.autocomplete.PartialAcceptAutocompleteAction"
                 class="com.github.continuedev.continueintellijextension.autocomplete.PartialAcceptAutocompleteAction"
-                text="Partial Accept Autocomplete Suggestion"
-                description="Partial Accept Autocomplete Suggestion">
+                text="部分接受自动完成建议"
+                description="部分接受自动完成建议">
             <keyboard-shortcut first-keystroke="control alt RIGHT" keymap="$default"/>
             <keyboard-shortcut first-keystroke="alt meta RIGHT" keymap="Mac OS X"/>
         </action>
     </actions>
-
 
 </idea-plugin>

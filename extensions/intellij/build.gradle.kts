@@ -5,24 +5,24 @@ fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
 
 plugins {
-    id("java") // Java support
-    alias(libs.plugins.kotlin) // Kotlin support
-    alias(libs.plugins.gradleIntelliJPlugin) // Gradle IntelliJ Plugin
-    alias(libs.plugins.changelog) // Gradle Changelog Plugin
-    alias(libs.plugins.qodana) // Gradle Qodana Plugin
-    alias(libs.plugins.kover) // Gradle Kover Plugin
+    id("java") // Java 支持
+    alias(libs.plugins.kotlin) // Kotlin 支持
+    alias(libs.plugins.gradleIntelliJPlugin) // Gradle IntelliJ 插件
+    alias(libs.plugins.changelog) // Gradle Changelog 插件
+    alias(libs.plugins.qodana) // Gradle Qodana 插件
+    alias(libs.plugins.kover) // Gradle Kover 插件
     kotlin("plugin.serialization") version "1.8.0"
 }
 
 group = properties("pluginGroup").get()
 version = properties("pluginVersion").get()
 
-// Configure project's dependencies
+// 配置项目的依赖
 repositories {
     mavenCentral()
 }
 
-// Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
+// 依赖由 Gradle 版本目录管理 - 了解更多: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
 //    implementation(libs.annotations)
     implementation("com.squareup.okhttp3:okhttp:4.9.1") {
@@ -44,28 +44,28 @@ dependencies {
 }
 
 
-// Set the JVM language level used to build the project. Use Java 11 for 2020.3+, and Java 17 for 2022.2+.
+// 设置用于构建项目的 JVM 语言级别。对于 2020.3+ 使用 Java 11，对于 
 kotlin {
     jvmToolchain(17)
 }
 
-// Configure Gradle IntelliJ Plugin - read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
+// 配置 Gradle IntelliJ 插件 - 了解更多: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
     pluginName = properties("pluginName")
     version = properties("platformVersion")
     type = properties("platformType")
 
-    // Plugin Dependencies. Uses `platformPlugins` property from the gradle.properties file.
+    // 插件依赖。使用 gradle.properties 文件中的 `platformPlugins` 属性。
     plugins = properties("platformPlugins").map { it.split(',').map(String::trim).filter(String::isNotEmpty) }
 }
 
-// Configure Gradle Changelog Plugin - read more: https://github.com/JetBrains/gradle-changelog-plugin
+// 配置 Gradle Changelog 插件 - 了解更多: https://github.com/JetBrains/gradle-changelog-plugin
 changelog {
     groups.empty()
     repositoryUrl = properties("pluginRepositoryUrl")
 }
 
-// Configure Gradle Qodana Plugin - read more: https://github.com/JetBrains/gradle-qodana-plugin
+// 配置 Gradle Qodana 插件 - 了解更多: https://github.com/JetBrains/gradle-qodana-plugin
 qodana {
     cachePath = provider { file(".qodana").canonicalPath }
     reportPath = provider { file("build/reports/inspections").canonicalPath }
@@ -73,7 +73,7 @@ qodana {
     showReport = environment("QODANA_SHOW_REPORT").map { it.toBoolean() }.getOrElse(false)
 }
 
-// Configure Gradle Kover Plugin - read more: https://github.com/Kotlin/kotlinx-kover#configuration
+// 配置 Gradle Kover 插件 - 了解更多: https://github.com/Kotlin/kotlinx-kover#configuration
 koverReport {
     defaults {
         xml {
@@ -101,21 +101,21 @@ tasks {
         sinceBuild = properties("pluginSinceBuild")
         untilBuild = properties("pluginUntilBuild")
 
-        // Extract the <!-- Plugin description --> section from README.md and provide for the plugin's manifest
+        // 从 README.md 中提取 <!-- Plugin description --> 部分并提供给插件的清单
         pluginDescription = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map {
             val start = "<!-- Plugin description -->"
             val end = "<!-- Plugin description end -->"
 
             with (it.lines()) {
                 if (!containsAll(listOf(start, end))) {
-                    throw GradleException("Plugin description section not found in README.md:\n$start ... $end")
+                    throw GradleException("在 README.md 中未找到插件描述部分:\n$start ... $end")
                 }
                 subList(indexOf(start) + 1, indexOf(end)).joinToString("\n").let(::markdownToHTML)
             }
         }
 //
-//        val changelog = project.changelog // local variable for configuration cache compatibility
-//        // Get the latest available change notes from the changelog file
+//        val changelog = project.changelog // 为配置缓存兼容性使用的局部变量
+//        // 从变更日志文件中获取最新的可用变更说明
 //        changeNotes = properties("pluginVersion").map { pluginVersion ->
 //            with(changelog) {
 //                renderItem(
@@ -128,8 +128,8 @@ tasks {
 //        }
     }
 
-    // Configure UI tests plugin
-    // Read more: https://github.com/JetBrains/intellij-ui-test-robot
+    // 配置 UI 测试插件
+    // 了解更多: https://github.com/JetBrains/intellij-ui-test-robot
     runIdeForUiTests {
         systemProperty("robot-server.port", "8082")
         systemProperty("ide.mac.message.dialogs.as.sheets", "false")
@@ -146,12 +146,12 @@ tasks {
     publishPlugin {
 //        dependsOn("patchChangelog")
         token = environment("PUBLISH_TOKEN")
-        // The pluginVersion is based on the SemVer (https://semver.org) and supports pre-release labels, like 2.1.7-alpha.3
-        // Specify pre-release label to publish the plugin in a custom Release Channel automatically. Read more:
+        // pluginVersion 基于 SemVer (https://semver.org) 并支持预发布标签，如 2.1.7-alpha.3
+        // 指定预发布标签以自动在自定义发布频道中发布插件。了解更多:
         // https://plugins.jetbrains.com/docs/intellij/deployment.html#specifying-a-release-channel
         channels.set(listOf(environment("RELEASE_CHANNEL").getOrElse("eap")))
 
-        // We always hide the stable releases until a few days of EAP have proven them stable
+        // 我们总是隐藏稳定版本，直到几天的 EAP 证明它们稳定
 //        hidden = environment("RELEASE_CHANNEL").map { it == "stable" }.getOrElse(false)
     }
 }

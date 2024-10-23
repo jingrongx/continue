@@ -1,5 +1,5 @@
-# Move Chat to the right sidebar
+# 将聊天移动到右侧边栏
 
-### This will prevent the Chat panel from covering your file explorer
+### 这将防止聊天面板覆盖文件资源管理器
 
 ![Move Continue to right sidebar](./move-to-right-sidebar.gif)

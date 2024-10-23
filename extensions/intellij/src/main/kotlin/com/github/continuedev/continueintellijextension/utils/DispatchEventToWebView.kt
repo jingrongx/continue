@@ -19,14 +19,14 @@ fun CoroutineScope.dispatchEventToWebview(
     val jsCode = buildJavaScript(type, jsonData)
 
     launch(CoroutineExceptionHandler { _, exception ->
-        println("Failed to dispatch custom event: ${exception.message}")
+        println("自定义事件分发失败: ${exception.message}")
     }) {
         while (true) {
             try {
                 webView.executeJavaScriptAsync(jsCode)
-                break  // If the JS execution is successful, break the loop
+                break  // 如果JS执行成功，跳出循环
             } catch (e: IllegalStateException) {
-                delay(1000)  // If an error occurs, wait for 1 second and then retry
+                delay(1000)  // 如果发生错误，等待1秒然后重试
             }
         }
     }
@@ -38,14 +38,14 @@ fun CoroutineScope.runJsInWebview(
 ) {
     if (webView == null) return
     launch(CoroutineExceptionHandler { _, exception ->
-        println("Failed to dispatch custom event: ${exception.message}")
+        println("自定义事件分发失败: ${exception.message}")
     }) {
         while (true) {
             try {
                 webView.executeJavaScriptAsync(jsCode)
-                break  // If the JS execution is successful, break the loop
+                break  // 如果JS执行成功，跳出循环
             } catch (e: IllegalStateException) {
-                delay(1000)  // If an error occurs, wait for 1 second and then retry
+                delay(1000)  // 如果发生错误，等待1秒然后重试
             }
         }
     }

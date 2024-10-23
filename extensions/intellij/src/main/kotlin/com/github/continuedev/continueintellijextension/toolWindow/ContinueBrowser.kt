@@ -94,7 +94,7 @@ class ContinueBrowser(val project: Project, url: String, useOsr: Boolean = false
         browser.loadURL(url);
         Disposer.register(project, browser)
 
-        // Listen for events sent from browser
+        // 监听来自浏览器的事件
         val myJSQueryOpenInBrowser = JBCefJSQuery.create((browser as JBCefBrowserBase?)!!)
         myJSQueryOpenInBrowser.addHandler { msg: String? ->
             val parser = JsonParser()
@@ -111,8 +111,8 @@ class ContinueBrowser(val project: Project, url: String, useOsr: Boolean = false
             val ide = continuePluginService.ideProtocolClient;
 
             val respond = fun(data: Any?) {
-                // This matches the way that we expect receive messages in IdeMessenger.ts (gui)
-                // and the way they are sent in VS Code (webviewProtocol.ts)
+                // 这与我们在 IdeMessenger.ts (gui) 中期望接收消息的方式相匹配
+                // 以及它们在 VS Code (webviewProtocol.ts) 中发送的方式
                 var result: Map<String, Any?>? = null
                 if (MessageTypes.generatorTypes.contains(messageType)) {
                     result = data as? Map<String, Any?>
@@ -139,7 +139,7 @@ class ContinueBrowser(val project: Project, url: String, useOsr: Boolean = false
                 }
                 "onLoad" -> {
                     coroutineScope.launch {
-                        // Set the colors to match Intellij theme
+                        // 设置颜色以匹配 Intellij 主题
                         val colors = GetTheme().getTheme();
                         sendToWebview("setColors", colors)
 
@@ -210,7 +210,7 @@ class ContinueBrowser(val project: Project, url: String, useOsr: Boolean = false
             null
         }
 
-        // Listen for the page load event
+        // 监听页面加载事件
         browser.jbCefClient.addLoadHandler(object : CefLoadHandlerAdapter() {
             override fun onLoadingStateChange(
                     browser: CefBrowser?,
@@ -219,7 +219,7 @@ class ContinueBrowser(val project: Project, url: String, useOsr: Boolean = false
                     canGoForward: Boolean
             ) {
                 if (!isLoading) {
-                    // The page has finished loading
+                    // 页面已加载完成
                     executeJavaScript(browser, myJSQueryOpenInBrowser)
                 }
             }
@@ -227,7 +227,7 @@ class ContinueBrowser(val project: Project, url: String, useOsr: Boolean = false
 
     }
     fun executeJavaScript(browser: CefBrowser?, myJSQueryOpenInBrowser: JBCefJSQuery) {
-        // Execute JavaScript - you might want to handle potential exceptions here
+        // 执行 JavaScript - 你可能需要在这里处理潜在的异常
         val script = """window.postIntellijMessage = function(messageType, data, messageId) {
                 const msg = JSON.stringify({messageType, data, messageId});
                 ${myJSQueryOpenInBrowser.inject("msg")}
@@ -253,7 +253,7 @@ class ContinueBrowser(val project: Project, url: String, useOsr: Boolean = false
         try {
             this.browser.executeJavaScriptAsync(jsCode)
         } catch (error: IllegalStateException) {
-            println("Webview not initialized yet $error")
+            println("Webview 尚未初始化 $error")
         }
     }
 

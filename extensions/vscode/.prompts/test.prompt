@@ -2,16 +2,16 @@ temperature: 0.5
 maxTokens: 4096
 ---
 <system>
-You are an expert programmer
+你是一名专家程序员
 </system>
 
 {{{ input }}}
 
-Write unit tests for the above selected code, following each of these instructions:
-- Use `jest`
-- Properly set up and tear down
-- Include important edge cases
-- The tests should be complete and sophisticated
-- Give the tests just as chat output, don't edit any file
-- Don't explain how to set up `jest`
-- Write a single code block, making sure to label with the language being used (e.g. "```typscript")
+为上面选择的代码编写单元测试，遵循以下每条指令：
+- 使用 `jest`
+- 正确设置和拆卸
+- 包括重要的边缘情况
+- 测试应完整且复杂
+- 仅以聊天输出的形式提供测试，不要编辑任何文件
+- 不要解释如何设置 `jest`
+- 编写一个单独的代码块，确保标注使用的语言（例如 "```typescript"）

@@ -4,10 +4,10 @@
                        / /___   / /_/ /_  / / // /_  _  /  _  / / // /_/ / /  __/
                        \____/   \____/ /_/ /_/ \__/  /_/   /_/ /_/ \__,_/  \___/
 
-                                 Chat, Edit, and Autocomplete tutorial
+                                 聊天、编辑和自动完成教程
 """
 
-# ———————————————————— Chat [Cmd/Ctrl + J]: Ask "what sorting algorithm is this?" ————————————————————
+# ———————————————————— 聊天 [Cmd/Ctrl + J]: 询问“这是什么排序算法？” ————————————————————
 
 def sorting_algorithm(x):
     for i in range(len(x)):
@@ -16,7 +16,7 @@ def sorting_algorithm(x):
                 x[j], x[j + 1] = x[j + 1], x[j]
     return x
 
-# —————————————————— Edit [Cmd/Ctrl + I]: Tell Continue to "make this more readable" —————————————————
+# —————————————————— 编辑 [Cmd/Ctrl + I]: 告诉 Continue “让这个更易读” —————————————————
 
 def sorting_algorithm(x):
     for i in range(len(x)):
@@ -25,9 +25,9 @@ def sorting_algorithm(x):
                 x[j], x[j + 1] = x[j + 1], x[j]
     return x
 
-# ——————————————— Autocomplete [Tab]: Place cursor after `:` below and press [Enter] —————————————————
+# ——————————————— 自动完成 [Tab]: 将光标放在 `:` 后面并按 [Enter] —————————————————
 
-# Basic assertion for sorting_algorithm:
+# sorting_algorithm 的基本断言：
 
 
-"—————————————————— Learn more at https://docs.continue.dev/getting-started/overview ————————————————"
+"—————————————————— 了解更多信息请访问 https://docs.continue.dev/getting-started/overview ————————————————"
