@@ -41,8 +41,8 @@ function autodetectPlatformAndArch() {
 }
 
 function validateFilesPresent(pathsToVerify) {
-  // This script verifies after pacakging that necessary files are in the correct locations
-  // In many cases just taking a sample file from the folder when they are all roughly the same thing
+  // 这个脚本在打包后验证必要的文件是否在正确的位置
+  // 在许多情况下，只需从文件夹中取一个示例文件，因为它们大致相同
 
   let missingFiles = [];
   let emptyFiles = [];
