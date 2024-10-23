@@ -1,7 +1,9 @@
 export async function* toAsyncIterable(
   nodeReadable: NodeJS.ReadableStream,
 ): AsyncGenerator<Uint8Array> {
+  // 遍历 Node.js 可读流的每个块
   for await (const chunk of nodeReadable) {
+    // 将块作为 Uint8Array 产出
     yield chunk as Uint8Array;
   }
 }
@@ -9,19 +11,22 @@ export async function* toAsyncIterable(
 export async function* streamResponse(
   response: Response,
 ): AsyncGenerator<string> {
+  // 检查响应状态码是否为 200
   if (response.status !== 200) {
+    // 如果不是，抛出错误并返回响应文本
     throw new Error(await response.text());
   }
 
+  // 检查响应是否有主体
   if (!response.body) {
     throw new Error("No response body returned.");
   }
 
-  // Get the major version of Node.js
+  // 获取 Node.js 的主版本号
   const nodeMajorVersion = parseInt(process.versions.node.split(".")[0], 10);
 
   if (nodeMajorVersion >= 20) {
-    // Use the new API for Node 20 and above
+    // 对于 Node 20 及以上版本，使用新的 API
     const stream = (ReadableStream as any).from(response.body);
     for await (const chunk of stream.pipeThrough(
       new TextDecoderStream("utf-8"),
@@ -29,8 +34,8 @@ export async function* streamResponse(
       yield chunk;
     }
   } else {
-    // Fallback for Node versions below 20
-    // Streaming with this method doesn't work as version 20+ does
+    // 对于 Node 20 以下版本的回退方案
+    // 使用这种方法进行流式传输不如 20+ 版本
     const decoder = new TextDecoder("utf-8");
     const nodeStream = response.body as unknown as NodeJS.ReadableStream;
     for await (const chunk of toAsyncIterable(nodeStream)) {
@@ -40,11 +45,13 @@ export async function* streamResponse(
 }
 
 function parseDataLine(line: string): any {
+  // 解析以 "data: " 开头的行
   const json = line.startsWith("data: ")
     ? line.slice("data: ".length)
     : line.slice("data:".length);
 
   try {
+    // 尝试解析 JSON 数据
     const data = JSON.parse(json);
     if (data.error) {
       throw new Error(`Error streaming response: ${data.error}`);
@@ -57,6 +64,7 @@ function parseDataLine(line: string): any {
 }
 
 function parseSseLine(line: string): { done: boolean; data: any } {
+  // 解析 SSE 行
   if (line.startsWith("data: [DONE]")) {
     return { done: true, data: undefined };
   }

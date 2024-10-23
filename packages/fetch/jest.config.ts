@@ -1,41 +1,41 @@
 /**
- * For a detailed explanation regarding each configuration property, visit:
+ * 有关每个配置属性的详细说明，请访问：
  * https://jestjs.io/docs/configuration
  */
 
 import type {Config} from 'jest';
 
 const config: Config = {
-  // All imported modules in your tests should be mocked automatically
+  // 所有在测试中导入的模块都应该自动模拟
   // automock: false,
 
-  // Stop running tests after `n` failures
+  // 在 `n` 次失败后停止运行测试
   // bail: 0,
 
-  // The directory where Jest should store its cached dependency information
+  // Jest 存储其缓存的依赖信息的目录
   // cacheDirectory: "/private/var/folders/n_/c3r8w0s95xl271j98y2lzhz80000gn/T/jest_dx",
 
-  // Automatically clear mock calls, instances, contexts and results before every test
+  // 在每次测试前自动清除模拟调用、实例、上下文和结果
   clearMocks: true,
 
-  // Indicates whether the coverage information should be collected while executing the test
+  // 指示在执行测试时是否应收集覆盖率信息
   collectCoverage: true,
 
-  // An array of glob patterns indicating a set of files for which coverage information should be collected
+  // 一个 glob 模式数组，指示应收集覆盖率信息的一组文件
   // collectCoverageFrom: undefined,
 
-  // The directory where Jest should output its coverage files
+  // Jest 应输出其覆盖率文件的目录
   coverageDirectory: "coverage",
 
-  // An array of regexp pattern strings used to skip coverage collection
+  // 用于跳过覆盖率收集的正则表达式模式字符串数组
   // coveragePathIgnorePatterns: [
   //   "/node_modules/"
   // ],
 
-  // Indicates which provider should be used to instrument code for coverage
+  // 指示应使用哪个提供程序来为覆盖率提供代码
   coverageProvider: "v8",
 
-  // A list of reporter names that Jest uses when writing coverage reports
+  // Jest 在编写覆盖率报告时使用的报告器名称列表
   // coverageReporters: [
   //   "json",
   //   "text",
@@ -43,41 +43,41 @@ const config: Config = {
   //   "clover"
   // ],
 
-  // An object that configures minimum threshold enforcement for coverage results
+  // 配置覆盖率结果的最小阈值强制执行的对象
   // coverageThreshold: undefined,
 
-  // A path to a custom dependency extractor
+  // 自定义依赖提取器的路径
   // dependencyExtractor: undefined,
 
-  // Make calling deprecated APIs throw helpful error messages
+  // 调用已弃用的 API 时抛出有用的错误消息
   // errorOnDeprecated: false,
 
-  // The default configuration for fake timers
+  // 假定计时器的默认配置
   // fakeTimers: {
   //   "enableGlobally": false
   // },
 
-  // Force coverage collection from ignored files using an array of glob patterns
+  // 使用 glob 模式数组强制从忽略的文件中收集覆盖率
   // forceCoverageMatch: [],
 
-  // A path to a module which exports an async function that is triggered once before all test suites
+  // 导出异步函数的模块路径，该函数在所有测试套件之前触发一次
   // globalSetup: undefined,
 
-  // A path to a module which exports an async function that is triggered once after all test suites
+  // 导出异步函数的模块路径，该函数在所有测试套件之后触发一次
   // globalTeardown: undefined,
 
-  // A set of global variables that need to be available in all test environments
+  // 需要在所有测试环境中可用的一组全局变量
   // globals: {},
 
-  // The maximum amount of workers used to run your tests. Can be specified as % or a number. E.g. maxWorkers: 10% will use 10% of your CPU amount + 1 as the maximum worker number. maxWorkers: 2 will use a maximum of 2 workers.
+  // 用于运行测试的最大工作者数量。可以指定为百分比或数字。例如，maxWorkers: 10% 将使用 CPU 数量的 10% + 1 作为最大工作者数量。maxWorkers: 2 将使用最多 2 个工作者。
   // maxWorkers: "50%",
 
-  // An array of directory names to be searched recursively up from the requiring module's location
+  // 从请求模块的位置递归向上搜索的目录名称数组
   // moduleDirectories: [
   //   "node_modules"
   // ],
 
-  // An array of file extensions your modules use
+  // 模块使用的文件扩展名数组
   // moduleFileExtensions: [
   //   "js",
   //   "mjs",
@@ -89,110 +89,110 @@ const config: Config = {
   //   "node"
   // ],
 
-  // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
+  // 从正则表达式映射到模块名称或模块名称数组的映射，允许使用单个模块替代资源
   // moduleNameMapper: {},
 
-  // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
+  // 在被模块加载器视为“可见”之前，匹配所有模块路径的正则表达式模式字符串数组
   // modulePathIgnorePatterns: [],
 
-  // Activates notifications for test results
+  // 激活测试结果的通知
   // notify: false,
 
-  // An enum that specifies notification mode. Requires { notify: true }
+  // 指定通知模式的枚举。需要 { notify: true }
   // notifyMode: "failure-change",
 
-  // A preset that is used as a base for Jest's configuration
+  // 用作 Jest 配置基础的预设
   // preset: undefined,
 
-  // Run tests from one or more projects
+  // 从一个或多个项目运行测试
   // projects: undefined,
 
-  // Use this configuration option to add custom reporters to Jest
+  // 使用此配置选项向 Jest 添加自定义报告器
   // reporters: undefined,
 
-  // Automatically reset mock state before every test
+  // 在每次测试前自动重置模拟状态
   // resetMocks: false,
 
-  // Reset the module registry before running each individual test
+  // 在运行每个单独的测试之前重置模块注册表
   // resetModules: false,
 
-  // A path to a custom resolver
+  // 自定义解析器的路径
   // resolver: undefined,
 
-  // Automatically restore mock state and implementation before every test
+  // 在每次测试前自动恢复模拟状态和实现
   // restoreMocks: false,
 
-  // The root directory that Jest should scan for tests and modules within
+  // Jest 应扫描测试和模块的根目录
   // rootDir: undefined,
 
-  // A list of paths to directories that Jest should use to search for files in
+  // Jest 应用于搜索文件的目录路径列表
   // roots: [
   //   "<rootDir>"
   // ],
 
-  // Allows you to use a custom runner instead of Jest's default test runner
+  // 允许使用自定义运行器而不是 Jest 的默认测试运行器
   // runner: "jest-runner",
 
-  // The paths to modules that run some code to configure or set up the testing environment before each test
+  // 在每次测试之前运行一些代码以配置或设置测试环境的模块路径
   // setupFiles: [],
 
-  // A list of paths to modules that run some code to configure or set up the testing framework before each test
+  // 在每次测试之前运行一些代码以配置或设置测试框架的模块路径列表
   // setupFilesAfterEnv: [],
 
-  // The number of seconds after which a test is considered as slow and reported as such in the results.
+  // 在结果中报告为慢的测试的秒数
   // slowTestThreshold: 5,
 
-  // A list of paths to snapshot serializer modules Jest should use for snapshot testing
+  // Jest 应用于快照测试的快照序列化器模块路径列表
   // snapshotSerializers: [],
 
-  // The test environment that will be used for testing
+  // 将用于测试的测试环境
   // testEnvironment: "jest-environment-node",
 
-  // Options that will be passed to the testEnvironment
+  // 将传递给 testEnvironment 的选项
   // testEnvironmentOptions: {},
 
-  // Adds a location field to test results
+  // 向测试结果添加位置字段
   // testLocationInResults: false,
 
-  // The glob patterns Jest uses to detect test files
+  // Jest 用于检测测试文件的 glob 模式
   // testMatch: [
   //   "**/__tests__/**/*.[jt]s?(x)",
   //   "**/?(*.)+(spec|test).[tj]s?(x)"
   // ],
 
-  // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
+  // 与所有测试路径匹配的正则表达式模式字符串数组，匹配的测试将被跳过
   // testPathIgnorePatterns: [
   //   "/node_modules/"
   // ],
 
-  // The regexp pattern or array of patterns that Jest uses to detect test files
+  // Jest 用于检测测试文件的正则表达式模式或模式数组
   // testRegex: [],
 
-  // This option allows the use of a custom results processor
+  // 此选项允许使用自定义结果处理器
   // testResultsProcessor: undefined,
 
-  // This option allows use of a custom test runner
+  // 此选项允许使用自定义测试运行器
   // testRunner: "jest-circus/runner",
 
-  // A map from regular expressions to paths to transformers
+  // 从正则表达式映射到转换器路径的映射
   // transform: undefined,
 
-  // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
+  // 与所有源文件路径匹配的正则表达式模式字符串数组，匹配的文件将跳过转换
   // transformIgnorePatterns: [
   //   "/node_modules/",
   //   "\\.pnp\\.[^\\/]+$"
   // ],
 
-  // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
+  // 在模块加载器自动为其返回模拟之前，与所有模块匹配的正则表达式模式字符串数组
   // unmockedModulePathPatterns: undefined,
 
-  // Indicates whether each individual test should be reported during the run
+  // 指示在运行期间是否应报告每个单独的测试
   // verbose: undefined,
 
-  // An array of regexp patterns that are matched against all source file paths before re-running tests in watch mode
+  // 在重新运行测试的监视模式下，与所有源文件路径匹配的正则表达式模式数组
   // watchPathIgnorePatterns: [],
 
-  // Whether to use watchman for file crawling
+  // 是否使用 watchman 进行文件爬网
   // watchman: true,
 };
 

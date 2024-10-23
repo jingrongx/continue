@@ -19,7 +19,7 @@ export function fetchwithRequestOptions(
     url = new URL(url);
   }
 
-  const TIMEOUT = 7200; // 7200 seconds = 2 hours
+  const TIMEOUT = 7200; // 超时时间为7200秒，即2小时
 
   let globalCerts: string[] = [];
   if (process.env.IS_BINARY) {
@@ -40,7 +40,7 @@ export function fetchwithRequestOptions(
     );
   }
 
-  const timeout = (requestOptions?.timeout ?? TIMEOUT) * 1000; // measured in ms
+  const timeout = (requestOptions?.timeout ?? TIMEOUT) * 1000; // 超时时间以毫秒为单位
 
   const agentOptions: { [key: string]: any } = {
     ca,
@@ -51,7 +51,7 @@ export function fetchwithRequestOptions(
     keepAliveMsecs: timeout,
   };
 
-  // Handle ClientCertificateOptions
+  // 处理客户端证书选项
   if (requestOptions?.clientCertificate) {
     agentOptions.cert = fs.readFileSync(
       requestOptions.clientCertificate.cert,
@@ -68,7 +68,7 @@ export function fetchwithRequestOptions(
 
   const proxy = requestOptions?.proxy;
 
-  // Create agent
+  // 创建代理
   const protocol = url.protocol === "https:" ? https : http;
   const agent =
     proxy && !requestOptions?.noProxy?.includes(url.hostname)
@@ -86,12 +86,12 @@ export function fetchwithRequestOptions(
     ...requestOptions?.headers,
   };
 
-  // Replace localhost with 127.0.0.1
+  // 将localhost替换为127.0.0.1
   if (url.hostname === "localhost") {
     url.hostname = "127.0.0.1";
   }
 
-  // add extra body properties if provided
+  // 如果提供了额外的body属性，则添加
   let updatedBody: string | undefined = undefined;
   try {
     if (requestOptions?.extraBodyProperties && typeof init?.body === "string") {
@@ -102,10 +102,10 @@ export function fetchwithRequestOptions(
       });
     }
   } catch (e) {
-    console.log("Unable to parse HTTP request body: ", e);
+    console.log("无法解析HTTP请求体: ", e);
   }
 
-  // fetch the request with the provided options
+  // 使用提供的选项发起请求
   const resp = fetch(url, {
     ...init,
     body: updatedBody ?? init?.body,
