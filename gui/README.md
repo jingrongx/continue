@@ -1,3 +1,3 @@
-# Continue React App
+# 继续 React 应用程序
 
-The Continue React app is a notebook-like interface to the Continue server. It allows the user to submit arbitrary text input, then communicates with the server to takes steps, which are displayed as a sequence of editable cells. The React app should sit beside an IDE, as in the VS Code extension.
+继续 React 应用程序是一个类似笔记本的界面，用于连接到继续服务器。它允许用户提交任意文本输入，然后与服务器通信以执行步骤，这些步骤显示为一系列可编辑的单元格。React 应用程序应与 IDE 并排放置，例如在 VS Code 扩展中。
