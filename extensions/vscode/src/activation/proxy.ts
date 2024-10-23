@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 
 app.use((req, res, next) => {
-  // Proxy the request
+  // 代理请求
   const { origin, host, ...headers } = req.headers;
   const url = req.headers["x-continue-url"] as string;
   const parsedUrl = new URL(url);
@@ -45,11 +45,11 @@ app.use((req, res, next) => {
 
 // http-middleware-proxy
 // app.use("/", (req, res, next) => {
-//   // Extract the target from the request URL
+//   // 从请求URL中提取目标
 //   const target = req.headers["x-continue-url"] as string;
 //   const { origin, ...headers } = req.headers;
 
-//   // Create a new proxy middleware for this request
+//   // 为此请求创建一个新的代理中间件
 //   const proxy = createProxyMiddleware({
 //     target,
 //     ws: true,
@@ -58,15 +58,15 @@ app.use((req, res, next) => {
 //     },
 //   });
 
-//   // Call the middleware
+//   // 调用中间件
 //   proxy(req, res, next);
 // });
 
 export function startProxy() {
   const server = app.listen(PROXY_PORT, () => {
-    console.log(`Proxy server is running on port ${PROXY_PORT}`);
+    console.log(`代理服务器正在端口 ${PROXY_PORT} 上运行`);
   });
   server.on("error", (e) => {
-    // console.log("Proxy server already running on port 65433");
+    // console.log("代理服务器已在端口 65433 上运行");
   });
 }

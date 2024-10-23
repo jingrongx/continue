@@ -1,1 +1,1 @@
-all-MiniLM-L6-v2 is the sentence transformers model used with transformers.js to locally generate codebase embeddings.
+all-MiniLM-L6-v2 是与 transformers.js 一起使用的句子转换器模型，用于在本地生成代码库嵌入。

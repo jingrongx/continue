@@ -15,7 +15,7 @@ const esbuildConfig = {
     ".node": "file",
   },
 
-  // To allow import.meta.path for transformers.js
+  // 允许 transformers.js 使用 import.meta.path
   // https://github.com/evanw/esbuild/issues/1492#issuecomment-893144483
   inject: ["./scripts/importMetaUrl.js"],
   define: { "import.meta.url": "importMetaUrl" },
@@ -23,7 +23,7 @@ const esbuildConfig = {
 };
 
 (async () => {
-  // Bundles the extension into one file
+  // 将扩展打包成一个文件
   if (flags.includes("--watch")) {
     const ctx = await esbuild.context(esbuildConfig);
     await ctx.watch();

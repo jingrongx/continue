@@ -1,7 +1,7 @@
 /**
- * This is an experimental copy of `prepackage.js` that will attempt to build the extension in a fully cross-platform way.
- * This is not what we use for real builds.
- * It is also not complete. Current status is that it is just beginning to be refactored.
+ * 这是 `prepackage.js` 的实验性副本，旨在以完全跨平台的方式构建扩展。
+ * 这不是我们用于实际构建的文件。
+ * 它也尚未完成。当前状态是刚开始重构。
  */
 
 const fs = require("fs");
@@ -27,7 +27,7 @@ const {
   copyTokenizers,
 } = require("./utils");
 
-// Clear folders that will be packaged to ensure clean slate
+// 清除将被打包的文件夹以确保干净的环境
 rimrafSync(path.join(__dirname, "..", "bin"));
 rimrafSync(path.join(__dirname, "..", "out"));
 fs.mkdirSync(path.join(__dirname, "..", "out", "node_modules"), {
@@ -38,7 +38,7 @@ if (!fs.existsSync(guiDist)) {
   fs.mkdirSync(guiDist, { recursive: true });
 }
 
-// Get the target to package for
+// 获取要打包的目标
 let target = undefined;
 const args = process.argv;
 if (args[2] === "--target") {
@@ -60,11 +60,11 @@ if (arch === "armhf") {
   arch = "arm64";
 }
 target = `${os}-${arch}`;
-console.log("[info] Using target: ", target);
+console.log("[info] 使用目标: ", target);
 
 const exe = os === "win32" ? ".exe" : "";
 
-console.log("[info] Using target: ", target);
+console.log("[info] 使用目标: ", target);
 
 function ghAction() {
   return !!process.env.GITHUB_ACTIONS;
@@ -83,39 +83,39 @@ function isWin() {
 }
 
 async function package(target, os, arch, exe) {
-  console.log("[info] Packaging extension for target ", target);
+  console.log("[info] 为目标打包扩展 ", target);
 
-  // Copy config_schema.json to config.json in docs and intellij
+  // 将 config_schema.json 复制到 docs 和 intellij 中的 config.json
   copyConfigSchema();
 
-  // Install node_modules
+  // 安装 node_modules
   installNodeModules();
 
-  // Build gui and copy to extensions
+  // 构建 GUI 并复制到扩展中
   await buildGui(ghAction());
 
-  // Assets
-  // Copy tree-sitter-wasm files
+  // 资源
+  // 复制 tree-sitter-wasm 文件
   await copyTreeSitterWasms();
 
-  // Copy tree-sitter tag query files
+  // 复制 tree-sitter 标签查询文件
   await copyTreeSitterTagQryFiles();
 
-  // Install and copy over native modules
+  // 安装并复制本地模块
   // *** onnxruntime-node ***
   await copyOnnxRuntimeFromNodeModules(target);
 
-  // copy llama tokenizers to out
+  // 将 llama tokenizers 复制到 out
   copyTokenizers();
 
-  // *** Install @lancedb binary ***
+  // *** 安装 @lancedb 二进制文件 ***
   const lancePackageToInstall = {
     "darwin-arm64": "@lancedb/vectordb-darwin-arm64",
     "darwin-x64": "@lancedb/vectordb-darwin-x64",
     "linux-arm64": "@lancedb/vectordb-linux-arm64-gnu",
     "linux-x64": "@lancedb/vectordb-linux-x64-gnu",
     "win32-x64": "@lancedb/vectordb-win32-x64-msvc",
-    "win32-arm64": "@lancedb/vectordb-win32-x64-msvc", // they don't have a win32-arm64 build
+    "win32-arm64": "@lancedb/vectordb-win32-x64-msvc", // 他们没有 win32-arm64 构建
   }[target];
   await installNodeModuleInTempDirAndCopyToCurrent(
     lancePackageToInstall,
@@ -134,24 +134,24 @@ async function package(target, os, arch, exe) {
 
   await downloadRipgrepBinary(target);
 
-  // copy node_modules to out/node_modules
+  // 将 node_modules 复制到 out/node_modules
   await copyNodeModules();
 
-  // Copy over any worker files
+  // 复制任何工作文件
   fs.cpSync(
     "node_modules/jsdom/lib/jsdom/living/xhr/xhr-sync-worker.js",
     "out/xhr-sync-worker.js",
   );
 
-  // Validate the all of the necessary files are present
+  // 验证所有必要的文件是否存在
   validateFilesPresent([
-    // Queries used to create the index for @code context provider
+    // 用于创建 @code 上下文提供程序索引的查询
     "tree-sitter/code-snippet-queries/c_sharp.scm",
 
-    // Queries used for @outline and @highlights context providers
+    // 用于 @outline 和 @highlights 上下文提供程序的查询
     "tag-qry/tree-sitter-c_sharp-tags.scm",
 
-    // onnx runtime bindngs
+    // onnx 运行时绑定
     `bin/napi-v3/${os}/${arch}/onnxruntime_binding.node`,
     `bin/napi-v3/${os}/${arch}/${
       os === "darwin"
@@ -162,16 +162,16 @@ async function package(target, os, arch, exe) {
     }`,
     "builtin-themes/dark_modern.json",
 
-    // Code/styling for the sidebar
+    // 侧边栏的代码/样式
     "gui/assets/index.js",
     "gui/assets/index.css",
 
-    // Tutorial
+    // 教程
     "media/move-chat-panel-right.md",
     "continue_tutorial.py",
     "config_schema.json",
 
-    // Embeddings model
+    // 嵌入模型
     "models/all-MiniLM-L6-v2/config.json",
     "models/all-MiniLM-L6-v2/special_tokens_map.json",
     "models/all-MiniLM-L6-v2/tokenizer_config.json",
@@ -179,19 +179,19 @@ async function package(target, os, arch, exe) {
     "models/all-MiniLM-L6-v2/vocab.txt",
     "models/all-MiniLM-L6-v2/onnx/model_quantized.onnx",
 
-    // node_modules (it's a bit confusing why this is necessary)
+    // node_modules（有点令人困惑为什么这是必要的）
     `node_modules/@vscode/ripgrep/bin/rg${exe}`,
 
-    // out directory (where the extension.js lives)
-    // "out/extension.js", This is generated afterward by vsce
+    // out 目录（extension.js 所在位置）
+    // "out/extension.js", 这是由 vsce 之后生成的
     // web-tree-sitter
     "out/tree-sitter.wasm",
-    // Worker required by jsdom
+    // jsdom 所需的工作者
     "out/xhr-sync-worker.js",
-    // SQLite3 Node native module
+    // SQLite3 Node 本地模块
     "out/build/Release/node_sqlite3.node",
 
-    // out/node_modules (to be accessed by extension.js)
+    // out/node_modules（由 extension.js 访问）
     `out/node_modules/@vscode/ripgrep/bin/rg${exe}`,
     `out/node_modules/@esbuild/${
       target === "win32-arm64"

@@ -29,8 +29,8 @@ import { VsCodeIde } from "../VsCodeIde";
 import { VsCodeWebviewProtocol } from "../webviewProtocol";
 
 /**
- * A shared messenger class between Core and Webview
- * so we don't have to rewrite some of the handlers
+ * Core和Webview之间的共享消息类
+ * 这样我们就不必重写一些处理程序
  */
 type TODO = any;
 type ToIdeOrWebviewFromCoreProtocol = ToIdeFromCoreProtocol &
@@ -79,7 +79,7 @@ export class VsCodeMessenger {
     private readonly configHandlerPromise: Promise<ConfigHandler>,
     private readonly workOsAuthProvider: WorkOsAuthProvider,
   ) {
-    /** WEBVIEW ONLY LISTENERS **/
+    /** 仅WEBVIEW监听器 **/
     this.onWebview("showFile", (msg) => {
       this.ide.openFile(msg.data.filepath);
     });
@@ -126,7 +126,7 @@ export class VsCodeMessenger {
     this.onWebview("toggleFullScreen", (msg) => {
       vscode.commands.executeCommand("continue.toggleFullScreen");
     });
-    // History
+    // 历史记录
     this.onWebview("saveFile", async (msg) => {
       return await ide.saveFile(msg.data.filepath);
     });
@@ -150,14 +150,14 @@ export class VsCodeMessenger {
     });
 
     this.onWebview("applyToCurrentFile", async (msg) => {
-      // Get active text editor
+      // 获取活动文本编辑器
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
-        vscode.window.showErrorMessage("No active editor to apply edits to");
+        vscode.window.showErrorMessage("没有活动编辑器可应用编辑");
         return;
       }
 
-      // Get LLM from config
+      // 从配置中获取LLM
       const configHandler = await configHandlerPromise;
       const config = await configHandler.loadConfig();
 
@@ -173,7 +173,7 @@ export class VsCodeMessenger {
 
         if (!llm) {
           vscode.window.showErrorMessage(
-            `Model ${defaultModelTitle} not found in config.`,
+            `在配置中找不到模型 ${defaultModelTitle}。`,
           );
           return;
         }
@@ -181,7 +181,7 @@ export class VsCodeMessenger {
 
       const fastLlm = getModelByRole(config, "repoMapFileSelection") ?? llm;
 
-      // Generate the diff and pass through diff manager
+      // 生成差异并通过差异管理器
       const [instant, diffLines] = await applyCodeBlock(
         editor.document.getText(),
         msg.data.text,
@@ -197,7 +197,7 @@ export class VsCodeMessenger {
           msg.data.streamId,
         );
       } else {
-        const prompt = `The following code was suggested as an edit:\n\`\`\`\n${msg.data.text}\n\`\`\`\nPlease apply it to the previous code.`;
+        const prompt = `以下代码被建议作为编辑：\n\`\`\`\n${msg.data.text}\n\`\`\`\n请将其应用于之前的代码。`;
         const fullEditorRange = new vscode.Range(
           0,
           0,
@@ -223,7 +223,7 @@ export class VsCodeMessenger {
         getExtensionUri().fsPath,
         "continue_tutorial.py",
       );
-      // Ensure keyboard shortcuts match OS
+      // 确保键盘快捷键与操作系统匹配
       if (process.platform !== "darwin") {
         let tutorialContent = fs.readFileSync(tutorialPath, "utf8");
         tutorialContent = tutorialContent
@@ -257,7 +257,7 @@ export class VsCodeMessenger {
       });
     });
 
-    /** PASS THROUGH FROM WEBVIEW TO CORE AND BACK **/
+    /** 从WEBVIEW到CORE的传递和返回 **/
     WEBVIEW_TO_CORE_PASS_THROUGH.forEach((messageType) => {
       this.onWebview(messageType, async (msg) => {
         return (await this.inProcessMessenger.externalRequest(
@@ -268,17 +268,17 @@ export class VsCodeMessenger {
       });
     });
 
-    /** PASS THROUGH FROM CORE TO WEBVIEW AND BACK **/
+    /** 从CORE到WEBVIEW的传递和返回 **/
     CORE_TO_WEBVIEW_PASS_THROUGH.forEach((messageType) => {
       this.onCore(messageType, async (msg) => {
         return this.webviewProtocol.request(messageType, msg.data);
       });
     });
 
-    /** CORE ONLY LISTENERS **/
-    // None right now
+    /** 仅CORE监听器 **/
+    // 目前没有
 
-    /** BOTH CORE AND WEBVIEW **/
+    /** CORE和WEBVIEW **/
     this.onWebviewOrCore("getIdeSettings", async (msg) => {
       return ide.getIdeSettings();
     });

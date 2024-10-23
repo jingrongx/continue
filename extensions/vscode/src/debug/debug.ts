@@ -3,7 +3,7 @@ import type { VsCodeIde } from "../VsCodeIde";
 import type { VsCodeWebviewProtocol } from "../webviewProtocol";
 
 export const threadStopped: Map<number, boolean> = new Map();
-// Arrays has better perf but you probably won't have thousands of threads in a single debug session
+// 数组性能更好，但在单个调试会话中你可能不会有成千上万个线程
 
 export function registerDebugTracker(
   webviewProtocol: VsCodeWebviewProtocol,
@@ -56,8 +56,8 @@ export function registerDebugTracker(
                   threadStopped.delete(Number(message.body.threadId));
                 else if (message.body.reason === "started")
                   threadStopped.set(Number(message.body.threadId), false);
-                // somehow the threadId does not respect the specification in my vscodium (debugging C++)
-                // expecting a number but got a string instead
+                // 在我的vscodium中，threadId不符合规范（调试C++）
+                // 期望是一个数字，但却得到了一个字符串
                 break;
 
               default:

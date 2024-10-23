@@ -1,4 +1,4 @@
-// Make sure odd-numbered version isn't published to main release. This will irreversibly cause us to bump the minor version by 2
+// 确保奇数版本不会发布到主版本。这将不可逆地导致我们将次版本号增加2
 const fs = require("fs");
 
 const packageJson = fs.readFileSync("package.json");
@@ -7,6 +7,6 @@ const version = packageJsonJson.version;
 const minor = parseInt(version.split(".")[1]);
 if (minor % 2 !== 0) {
   throw new Error(
-    "Do not publish odd-numbered version to main VS Code release!"
+    "不要将奇数版本发布到主 VS Code 版本！"
   );
 }

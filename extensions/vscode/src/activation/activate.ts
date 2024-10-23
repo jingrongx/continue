@@ -10,17 +10,17 @@ import { VsCodeContinueApi } from "./api";
 import { setupInlineTips } from "./inlineTips";
 
 export async function activateExtension(context: vscode.ExtensionContext) {
-  // Add necessary files
+  // 添加必要的文件
   getTsConfigPath();
   getContinueRcPath();
 
-  // Register commands and providers
+  // 注册命令和提供者
   registerQuickFixProvider();
   setupInlineTips(context);
 
   const vscodeExtension = new VsCodeExtension(context);
 
-  // Load Continue configuration
+  // 加载 Continue 配置
   if (!context.globalState.get("hasBeenInstalled")) {
     context.globalState.update("hasBeenInstalled", true);
     Telemetry.capture(
@@ -37,8 +37,8 @@ export async function activateExtension(context: vscode.ExtensionContext) {
     registerCustomContextProvider: api.registerCustomContextProvider.bind(api),
   };
 
-  // 'export' public api-surface
-  // or entire extension for testing
+  // '导出'公共 API 表面
+  // 或整个扩展用于测试
   return process.env.NODE_ENV === "test"
     ? {
         ...continuePublicApi,

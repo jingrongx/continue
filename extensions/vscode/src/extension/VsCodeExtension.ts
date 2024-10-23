@@ -33,7 +33,7 @@ import type { VsCodeWebviewProtocol } from "../webviewProtocol";
 import { VsCodeMessenger } from "./VsCodeMessenger";
 
 export class VsCodeExtension {
-  // Currently some of these are public so they can be used in testing (test/test-suites)
+  // 目前这些是公开的，以便在测试中使用（test/test-suites）
 
   private configHandler: ConfigHandler;
   private extensionContext: vscode.ExtensionContext;
@@ -49,7 +49,7 @@ export class VsCodeExtension {
   private workOsAuthProvider: WorkOsAuthProvider;
 
   constructor(context: vscode.ExtensionContext) {
-    // Register auth provider
+    // 注册认证提供者
     this.workOsAuthProvider = new WorkOsAuthProvider(context);
     this.workOsAuthProvider.refreshSessions();
     context.subscriptions.push(this.workOsAuthProvider);
@@ -65,7 +65,7 @@ export class VsCodeExtension {
     this.extensionContext = context;
     this.windowId = uuidv4();
 
-    // Dependencies of core
+    // core的依赖
     let resolveVerticalDiffManager: any = undefined;
     const verticalDiffManagerPromise = new Promise<VerticalDiffManager>(
       (resolve) => {
@@ -82,7 +82,7 @@ export class VsCodeExtension {
       this.extensionContext,
     );
 
-    // Sidebar
+    // 侧边栏
     context.subscriptions.push(
       vscode.window.registerWebviewViewProvider(
         "continue.continueGUIView",
@@ -94,7 +94,7 @@ export class VsCodeExtension {
     );
     resolveWebviewProtocol(this.sidebar.webviewProtocol);
 
-    // Config Handler with output channel
+    // 带输出通道的Config Handler
     const outputChannel = vscode.window.createOutputChannel(
       "Continue - LLM Prompt/Completion",
     );
@@ -136,7 +136,7 @@ export class VsCodeExtension {
       this.configHandler.reloadConfig.bind(this.configHandler),
     );
 
-    // Indexing + pause token
+    // 索引 + 暂停令牌
     this.diffManager.webviewProtocol = this.sidebar.webviewProtocol;
 
     this.configHandler.loadConfig().then((config) => {
@@ -164,11 +164,11 @@ export class VsCodeExtension {
       );
     });
 
-    // Tab autocomplete
+    // Tab自动补全
     const config = vscode.workspace.getConfiguration(EXTENSION_NAME);
     const enabled = config.get<boolean>("enableTabAutocomplete");
 
-    // Register inline completion provider
+    // 注册内联补全提供者
     setupStatusBar(
       enabled ? StatusBarStatus.Enabled : StatusBarStatus.Disabled,
     );
@@ -184,7 +184,7 @@ export class VsCodeExtension {
       ),
     );
 
-    // Battery
+    // 电池
     this.battery = new Battery();
     context.subscriptions.push(this.battery);
     context.subscriptions.push(monitorBatteryChanges(this.battery));
@@ -197,7 +197,7 @@ export class VsCodeExtension {
       context,
     );
 
-    // Commands
+    // 命令
     registerAllCommands(
       context,
       this.ide,
@@ -212,11 +212,10 @@ export class VsCodeExtension {
       this.core,
     );
 
-    // Disabled due to performance issues
+    // 由于性能问题已禁用
     // registerDebugTracker(this.sidebar.webviewProtocol, this.ide);
 
-    // Listen for file saving - use global file watcher so that changes
-    // from outside the window are also caught
+    // 监听文件保存 - 使用全局文件监视器以便捕获窗口外的更改
     fs.watchFile(getConfigJsonPath(), { interval: 1000 }, async (stats) => {
       await this.configHandler.reloadConfig();
     });
@@ -226,12 +225,11 @@ export class VsCodeExtension {
     });
 
     vscode.workspace.onDidSaveTextDocument(async (event) => {
-      // Listen for file changes in the workspace
+      // 监听工作区中的文件更改
       const filepath = event.uri.fsPath;
 
       if (arePathsEqual(filepath, getConfigJsonPath())) {
-        // Trigger a toast notification to provide UI feedback that config
-        // has been updated
+        // 触发一个toast通知以提供配置已更新的UI反馈
         const showToast = context.globalState.get<boolean>(
           "showConfigUpdateToast",
           true,
@@ -239,9 +237,9 @@ export class VsCodeExtension {
 
         if (showToast) {
           vscode.window
-            .showInformationMessage("Config updated", "Don't show again")
+            .showInformationMessage("配置已更新", "不再显示")
             .then((selection) => {
-              if (selection === "Don't show again") {
+              if (selection === "不再显示") {
                 context.globalState.update("showConfigUpdateToast", false);
               }
             });
@@ -257,16 +255,16 @@ export class VsCodeExtension {
         filepath.endsWith(".continueignore") ||
         filepath.endsWith(".gitignore")
       ) {
-        // Reindex the workspaces
+        // 重新索引工作区
         this.core.invoke("index/forceReIndex", undefined);
       } else {
-        // Reindex the file
+        // 重新索引文件
         const indexer = await this.core.codebaseIndexerPromise;
         indexer.refreshFile(filepath);
       }
     });
 
-    // When GitHub sign-in status changes, reload config
+    // 当GitHub登录状态更改时，重新加载配置
     vscode.authentication.onDidChangeSessions(async (e) => {
       if (e.provider.id === "github") {
         this.configHandler.reloadConfig();
@@ -277,27 +275,27 @@ export class VsCodeExtension {
             sessionInfo,
           });
 
-          // To make sure continue-proxy models and anything else requiring it get updated access token
+          // 确保continue-proxy模型和任何其他需要它的东西获得更新的访问令牌
           this.configHandler.reloadConfig();
         });
         this.core.invoke("didChangeControlPlaneSessionInfo", { sessionInfo });
       }
     });
 
-    // Refresh index when branch is changed
+    // 当分支更改时刷新索引
     this.ide.getWorkspaceDirs().then((dirs) =>
       dirs.forEach(async (dir) => {
         const repo = await this.ide.getRepo(vscode.Uri.file(dir));
         if (repo) {
           repo.state.onDidChange(() => {
-            // args passed to this callback are always undefined, so keep track of previous branch
+            // 传递给此回调的参数始终为undefined，因此跟踪以前的分支
             const currentBranch = repo?.state?.HEAD?.name;
             if (currentBranch) {
               if (this.PREVIOUS_BRANCH_FOR_WORKSPACE_DIR[dir]) {
                 if (
                   currentBranch !== this.PREVIOUS_BRANCH_FOR_WORKSPACE_DIR[dir]
                 ) {
-                  // Trigger refresh of index only in this directory
+                  // 仅在此目录中触发索引刷新
                   this.core.invoke("index/forceReIndex", { dir });
                 }
               }
@@ -309,11 +307,11 @@ export class VsCodeExtension {
       }),
     );
 
-    // Register a content provider for the readonly virtual documents
+    // 为只读虚拟文档注册内容提供者
     const documentContentProvider = new (class
       implements vscode.TextDocumentContentProvider
     {
-      // emitter and its event
+      // 发射器及其事件
       onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
       onDidChange = this.onDidChangeEmitter.event;
 

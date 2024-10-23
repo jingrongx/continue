@@ -25,14 +25,14 @@ async function writeFile(uri: vscode.Uri, contents: string) {
   await vscode.workspace.fs.writeFile(uri, new TextEncoder().encode(contents));
 }
 
-// THIS IS LOCAL
+// 这是本地的
 export const DIFF_DIRECTORY = path
   .join(os.homedir(), ".continue", ".diffs")
   .replace(/^C:/, "c:");
 
 export class DiffManager {
-  // Create a temporary file in the global .continue directory which displays the updated version
-  // Doing this because virtual files are read-only
+  // 在全局 .continue 目录中创建一个临时文件以显示更新的版本
+  // 这样做是因为虚拟文件是只读的
   private diffs: Map<string, DiffInfo> = new Map();
 
   diffAtNewFilepath(newFilepath: string): DiffInfo | undefined {
@@ -40,7 +40,7 @@ export class DiffManager {
   }
 
   private async setupDirectory() {
-    // Make sure the diff directory exists
+    // 确保差异目录存在
     if (!fs.existsSync(DIFF_DIRECTORY)) {
       fs.mkdirSync(DIFF_DIRECTORY, {
         recursive: true,
@@ -53,7 +53,7 @@ export class DiffManager {
   constructor(private readonly extensionContext: vscode.ExtensionContext) {
     this.setupDirectory();
 
-    // Listen for file closes, and if it's a diff file, clean up
+    // 监听文件关闭事件，如果是差异文件，则清理
     vscode.workspace.onDidCloseTextDocument((document) => {
       const newFilepath = document.uri.fsPath;
       const diffInfo = this.diffs.get(newFilepath);
@@ -73,11 +73,11 @@ export class DiffManager {
   private remoteTmpDir = "/tmp/continue";
   private getNewFilepath(originalFilepath: string): string {
     if (vscode.env.remoteName) {
-      // If we're in a remote, use the remote's temp directory
-      // Doing this because there's no easy way to find the home directory,
-      // and there aren't write permissions to the root directory
-      // and writing these to local causes separate issues
-      // because the vscode.diff command will always try to read from remote
+      // 如果我们在远程环境中，使用远程的临时目录
+      // 这样做是因为没有简单的方法找到主目录，
+      // 并且没有对根目录的写权限
+      // 将这些写入本地会导致其他问题
+      // 因为 vscode.diff 命令总是尝试从远程读取
       vscode.workspace.fs.createDirectory(uriFromFilePath(this.remoteTmpDir));
       return path.join(
         this.remoteTmpDir,
@@ -91,11 +91,11 @@ export class DiffManager {
     originalFilepath: string,
     newFilepath: string,
   ): Promise<vscode.TextEditor | undefined> {
-    // If the file doesn't yet exist or the basename is a single digit number (vscode terminal), don't open the diff editor
+    // 如果文件尚不存在或基名是单个数字（vscode 终端），则不要打开差异编辑器
     try {
       await vscode.workspace.fs.stat(uriFromFilePath(newFilepath));
     } catch (e) {
-      console.log("File doesn't exist, not opening diff editor", e);
+      console.log("文件不存在，不打开差异编辑器", e);
       return undefined;
     }
     if (path.basename(originalFilepath).match(/^\d$/)) {
@@ -112,7 +112,7 @@ export class DiffManager {
       return;
     }
 
-    // Change the vscode setting to allow codeLens in diff editor
+    // 更改 vscode 设置以允许在差异编辑器中使用 codeLens
     vscode.workspace
       .getConfiguration("diffEditor", editor.document.uri)
       .update("codeLens", true, vscode.ConfigurationTarget.Global);
@@ -124,13 +124,13 @@ export class DiffManager {
     ) {
       vscode.window
         .showInformationMessage(
-          `Accept (${getMetaKeyLabel()}⇧⏎) or reject (${getMetaKeyLabel()}⇧⌫) at the top of the file.`,
-          "Got it",
-          "Don't show again",
+          `在文件顶部接受 (${getMetaKeyLabel()}⇧⏎) 或拒绝 (${getMetaKeyLabel()}⇧⌫)。`,
+          "知道了",
+          "不再显示",
         )
         .then((selection) => {
-          if (selection === "Don't show again") {
-            // Get the global state
+          if (selection === "不再显示") {
+            // 获取全局状态
             this.extensionContext.globalState.update(
               "continue.showDiffInfoMessage",
               false,
@@ -160,13 +160,13 @@ export class DiffManager {
   ): Promise<string> {
     await this.setupDirectory();
 
-    // Create or update existing diff
+    // 创建或更新现有差异
     const newFilepath = this.getNewFilepath(originalFilepath);
     await writeFile(uriFromFilePath(newFilepath), newContent);
 
-    // Open the diff editor if this is a new diff
+    // 如果这是一个新的差异，则打开差异编辑器
     if (!this.diffs.has(newFilepath)) {
-      // Figure out the first line that is different
+      // 找出第一个不同的行
       const oldContent = await readFile(originalFilepath);
       const line = this._findFirstDifferentLine(oldContent, newContent);
 
@@ -179,7 +179,7 @@ export class DiffManager {
       this.diffs.set(newFilepath, diffInfo);
     }
 
-    // Open the editor if it hasn't been opened yet
+    // 如果编辑器尚未打开，则打开编辑器
     const diffInfo = this.diffs.get(newFilepath);
     if (diffInfo && !diffInfo?.editor) {
       diffInfo.editor = await this.openDiffEditor(
@@ -190,9 +190,9 @@ export class DiffManager {
     }
 
     if (getPlatform() === "windows") {
-      // Just a matter of how it renders
-      // Lags on windows without this
-      // Flashes too much on mac with it
+      // 只是渲染方式的问题
+      // 在 Windows 上没有这个会卡顿
+      // 在 Mac 上有这个会闪烁太多
       vscode.commands.executeCommand(
         "workbench.action.files.revert",
         uriFromFilePath(newFilepath),
@@ -203,7 +203,7 @@ export class DiffManager {
   }
 
   cleanUpDiff(diffInfo: DiffInfo, hideEditor = true) {
-    // Close the editor, remove the record, delete the file
+    // 关闭编辑器，移除记录，删除文件
     if (hideEditor && diffInfo.editor) {
       try {
         vscode.window.showTextDocument(diffInfo.editor.document);
@@ -243,22 +243,22 @@ export class DiffManager {
   }
 
   async acceptDiff(newFilepath?: string) {
-    // When coming from a keyboard shortcut, we have to infer the newFilepath from visible text editors
+    // 当来自键盘快捷键时，我们必须从可见文本编辑器推断 newFilepath
     if (!newFilepath) {
       newFilepath = this.inferNewFilepath();
     }
     if (!newFilepath) {
-      console.log("No newFilepath provided to accept the diff");
+      console.log("没有提供 newFilepath 来接受差异");
       return;
     }
-    // Get the diff info, copy new file to original, then delete from record and close the corresponding editor
+    // 获取差异信息，将新文件复制到原始文件，然后从记录中删除并关闭相应的编辑器
     const diffInfo = this.diffs.get(newFilepath);
     if (!diffInfo) {
-      console.log("No corresponding diffInfo found for newFilepath");
+      console.log("没有找到对应的 diffInfo 用于 newFilepath");
       return;
     }
 
-    // Save the right-side file, then copy over to original
+    // 保存右侧文件，然后复制到原始文件
     vscode.workspace.textDocuments
       .find((doc) => doc.uri.fsPath === newFilepath)
       ?.save()
@@ -274,24 +274,24 @@ export class DiffManager {
   }
 
   async rejectDiff(newFilepath?: string) {
-    // If no newFilepath is provided and there is only one in the dictionary, use that
+    // 如果没有提供 newFilepath 并且字典中只有一个，则使用该文件
     if (!newFilepath) {
       newFilepath = this.inferNewFilepath();
     }
     if (!newFilepath) {
       console.log(
-        "No newFilepath provided to reject the diff, diffs.size was",
+        "没有提供 newFilepath 来拒绝差异，diffs.size 是",
         this.diffs.size,
       );
       return;
     }
     const diffInfo = this.diffs.get(newFilepath);
     if (!diffInfo) {
-      console.log("No corresponding diffInfo found for newFilepath");
+      console.log("没有找到对应的 diffInfo 用于 newFilepath");
       return;
     }
 
-    // Stop the step at step_index in case it is still streaming
+    // 停止在 step_index 的步骤，以防它仍在流式传输
     this.webviewProtocol?.request("setInactive", undefined);
 
     vscode.workspace.textDocuments
@@ -309,26 +309,26 @@ async function recordAcceptReject(accepted: boolean, diffInfo: DiffInfo) {
   const devDataDir = devDataPath();
   const suggestionsPath = path.join(devDataDir, "suggestions.json");
 
-  // Initialize suggestions list
+  // 初始化建议列表
   let suggestions = [];
 
-  // Check if suggestions.json exists
+  // 检查 suggestions.json 是否存在
   try {
     const rawData = await readFile(suggestionsPath);
     suggestions = JSON.parse(rawData);
   } catch {}
 
-  // Add the new suggestion to the list
+  // 将新建议添加到列表中
   suggestions.push({
     accepted,
     timestamp: Date.now(),
     suggestion: diffInfo.originalFilepath,
   });
 
-  // Send the suggestion to the server
+  // 将建议发送到服务器
   // ideProtocolClient.sendAcceptRejectSuggestion(accepted);
 
-  // Write the updated suggestions back to the file
+  // 将更新后的建议写回文件
   await writeFile(
     vscode.Uri.file(suggestionsPath),
     JSON.stringify(suggestions, null, 4),

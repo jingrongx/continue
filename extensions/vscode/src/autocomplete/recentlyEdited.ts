@@ -14,12 +14,12 @@ interface VsCodeRecentlyEditedDocument {
 }
 
 export class RecentlyEditedTracker {
-  private static staleTime = 1000 * 60 * 2;
-  private static maxRecentlyEditedRanges = 3;
-  private recentlyEditedRanges: VsCodeRecentlyEditedRange[] = [];
+  private static staleTime = 1000 * 60 * 2; // 过期时间为2分钟
+  private static maxRecentlyEditedRanges = 3; // 最大最近编辑范围数
+  private recentlyEditedRanges: VsCodeRecentlyEditedRange[] = []; // 最近编辑范围数组
 
-  private recentlyEditedDocuments: VsCodeRecentlyEditedDocument[] = [];
-  private static maxRecentlyEditedDocuments = 10;
+  private recentlyEditedDocuments: VsCodeRecentlyEditedDocument[] = []; // 最近编辑文档数组
+  private static maxRecentlyEditedDocuments = 10; // 最大最近编辑文档数
 
   constructor() {
     vscode.workspace.onDidChangeTextDocument((event) => {
@@ -43,13 +43,13 @@ export class RecentlyEditedTracker {
 
     setInterval(() => {
       this.removeOldEntries();
-    }, 1000 * 15);
+    }, 1000 * 15); // 每15秒移除旧条目
   }
 
   private async insertRange(
     editedRange: Omit<VsCodeRecentlyEditedRange, "lines" | "symbols">,
   ): Promise<void> {
-    // Check for overlap with any existing ranges
+    // 检查是否与任何现有范围重叠
     for (let i = 0; i < this.recentlyEditedRanges.length; i++) {
       let range = this.recentlyEditedRanges[i];
       if (range.range.intersection(editedRange.range)) {
@@ -68,7 +68,7 @@ export class RecentlyEditedTracker {
       }
     }
 
-    // Otherwise, just add the new and maintain max size
+    // 否则，添加新的并保持最大大小
     const contents = await this._getContentsForRange(editedRange);
     const newLength = this.recentlyEditedRanges.unshift({
       ...editedRange,
@@ -84,7 +84,7 @@ export class RecentlyEditedTracker {
   }
 
   private insertDocument(uri: vscode.Uri): void {
-    // Don't add a duplicate
+    // 不添加重复项
     if (this.recentlyEditedDocuments.some((doc) => doc.uri === uri)) {
       return;
     }

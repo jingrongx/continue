@@ -17,11 +17,11 @@ export const quickPickStatusText = (status: StatusBarStatus | undefined) => {
   switch (status) {
     case undefined:
     case StatusBarStatus.Disabled:
-      return "$(circle-slash) Disable autocomplete";
+      return "$(circle-slash) 禁用自动补全";
     case StatusBarStatus.Enabled:
-      return "$(check) Enable autocomplete";
+      return "$(check) 启用自动补全";
     case StatusBarStatus.Paused:
-      return "$(debug-pause) Pause autocomplete";
+      return "$(debug-pause) 暂停自动补全";
   }
 };
 
@@ -29,11 +29,11 @@ export const getStatusBarStatusFromQuickPickItemLabel = (
   label: string,
 ): StatusBarStatus | undefined => {
   switch (label) {
-    case "$(circle-slash) Disable autocomplete":
+    case "$(circle-slash) 禁用自动补全":
       return StatusBarStatus.Disabled;
-    case "$(check) Enable autocomplete":
+    case "$(check) 启用自动补全":
       return StatusBarStatus.Enabled;
-    case "$(debug-pause) Pause autocomplete":
+    case "$(debug-pause) 暂停自动补全":
       return StatusBarStatus.Paused;
     default:
       return undefined;
@@ -44,11 +44,11 @@ const statusBarItemText = (status: StatusBarStatus | undefined) => {
   switch (status) {
     case undefined:
     case StatusBarStatus.Disabled:
-      return "$(circle-slash) Continue";
+      return "$(circle-slash) 继续";
     case StatusBarStatus.Enabled:
-      return "$(check) Continue";
+      return "$(check) 继续";
     case StatusBarStatus.Paused:
-      return "$(debug-pause) Continue";
+      return "$(debug-pause) 继续";
   }
 };
 
@@ -56,11 +56,11 @@ const statusBarItemTooltip = (status: StatusBarStatus | undefined) => {
   switch (status) {
     case undefined:
     case StatusBarStatus.Disabled:
-      return "Click to enable tab autocomplete";
+      return "点击以启用标签自动补全";
     case StatusBarStatus.Enabled:
-      return "Tab autocomplete is enabled";
+      return "标签自动补全已启用";
     case StatusBarStatus.Paused:
-      return "Tab autocomplete is paused";
+      return "标签自动补全已暂停";
   }
 };
 
@@ -83,7 +83,7 @@ export function setupStatusBar(
     statusBarFalseTimeout = undefined;
   }
 
-  // If statusBarItem hasn't been defined yet, create it
+  // 如果 statusBarItem 尚未定义，则创建它
   if (!statusBarItem) {
     statusBarItem = vscode.window.createStatusBarItem(
       vscode.StatusBarAlignment.Right,
@@ -91,7 +91,7 @@ export function setupStatusBar(
   }
 
   statusBarItem.text = loading
-    ? "$(loading~spin) Continue"
+    ? "$(loading~spin) 继续"
     : statusBarItemText(status);
   statusBarItem.tooltip = statusBarItemTooltip(status ?? statusBarStatus);
   statusBarItem.command = "continue.openTabAutocompleteConfigMenu";
@@ -145,12 +145,11 @@ export function getAutocompleteStatusBarDescription(
     return undefined;
   }
 
-  let description = "Currently selected";
+  let description = "当前已选择";
 
-  // Only set for Mistral since our default config includes Codestral without
-  // an API key
+  // 仅为 Mistral 设置，因为我们的默认配置包括没有 API 密钥的 Codestral
   if ((apiKey === undefined || apiKey === "") && providerName === "mistral") {
-    description += " (Missing API key)";
+    description += "（缺少 API 密钥）";
   }
 
   return description;
@@ -161,7 +160,7 @@ export function getAutocompleteStatusBarTitle(
   { title }: ILLM,
 ): string {
   if (!title) {
-    return "Unnamed Model";
+    return "未命名模型";
   }
 
   if (title === selected) {

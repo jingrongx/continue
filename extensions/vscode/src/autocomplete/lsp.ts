@@ -55,9 +55,9 @@ export async function executeGotoProvider(
         range: d.targetRange || d.range,
       }));
 
-    // Add to cache
+    // 添加到缓存
     if (gotoCache.size >= MAX_CACHE_SIZE) {
-      // Remove the oldest item from the cache
+      // 从缓存中移除最旧的项目
       const oldestKey = gotoCache.keys().next().value;
       if (oldestKey) {
         gotoCache.delete(oldestKey);
@@ -67,7 +67,7 @@ export async function executeGotoProvider(
 
     return results;
   } catch (e) {
-    console.warn(`Error executing ${input.name}:`, e);
+    console.warn(`执行 ${input.name} 时出错:`, e);
     return [];
   }
 }
@@ -89,12 +89,12 @@ function findChildren(
     return [];
   }
 
-  // Check if the current node's type is in the list of types we're interested in
+  // 检查当前节点的类型是否在我们感兴趣的类型列表中
   if (predicate(node)) {
     matchingNodes.push(node);
   }
 
-  // Recursively search for matching types in all children of the current node
+  // 递归搜索当前节点所有子节点中匹配的类型
   for (const child of node.children) {
     matchingNodes = matchingNodes.concat(
       findChildren(
@@ -126,31 +126,30 @@ async function crawlTypes(
   results: RangeInFileWithContents[] = [],
   searchedLabels: Set<string> = new Set(),
 ): Promise<RangeInFileWithContents[]> {
-  // Get the file contents if not already attached
+  // 获取文件内容，如果尚未附加
   const contents = isRifWithContents(rif)
     ? rif.contents
     : await ide.readFile(rif.filepath);
 
-  // Parse AST
+  // 解析 AST
   const ast = await getAst(rif.filepath, contents);
   if (!ast) return results;
   const astLineCount = ast.rootNode.text.split("\n").length;
 
-  // Find type identifiers
+  // 查找类型标识符
   const identifierNodes = findTypeIdentifiers(ast.rootNode).filter(
     (node) => !searchedLabels.has(node.text),
   );
-  // Don't search for the same type definition more than once
-  // We deduplicate below to be sure, but this saves calls to the LSP
+  // 不要多次搜索相同的类型定义
+  // 我们在下面去重以确保，但这可以节省对 LSP 的调用
   identifierNodes.forEach((node) => searchedLabels.add(node.text));
 
-  // Use LSP to get the definitions of those types
+  // 使用 LSP 获取这些类型的定义
   const definitions = await Promise.all(
     identifierNodes.map(async (node) => {
       const [typeDef] = await executeGotoProvider({
         uri: rif.filepath,
-        // TODO: tree-sitter is zero-indexed, but there seems to be an off-by-one
-        // error at least with the .ts parser sometimes
+        // TODO: tree-sitter 是从零开始索引的，但至少在 .ts 解析器中有一个偏差
         line:
           rif.range.start.line +
           Math.min(node.startPosition.row, astLineCount - 1),
@@ -168,9 +167,9 @@ async function crawlTypes(
     }),
   );
 
-  // TODO: Filter out if not in our code?
+  // TODO: 如果不在我们的代码中则过滤掉？
 
-  // Filter out duplicates
+  // 过滤掉重复项
   for (const definition of definitions) {
     if (
       !definition ||
@@ -185,7 +184,7 @@ async function crawlTypes(
     results.push(definition);
   }
 
-  // Recurse
+  // 递归
   if (depth > 0) {
     for (const result of [...results]) {
       await crawlTypes(result, ide, depth - 1, results, searchedLabels);
@@ -204,7 +203,7 @@ export async function getDefinitionsForNode(
   const ranges: (RangeInFile | RangeInFileWithContents)[] = [];
   switch (node.type) {
     case "call_expression": {
-      // function call -> function definition
+      // 函数调用 -> 函数定义
       const [funDef] = await executeGotoProvider({
         uri,
         line: node.startPosition.row,
@@ -215,8 +214,8 @@ export async function getDefinitionsForNode(
         return [];
       }
 
-      // Don't display a function of more than 15 lines
-      // We can of course do something smarter here eventually
+      // 不显示超过 15 行的函数
+      // 我们当然可以在这里做得更聪明
       let funcText = await ide.readRangeInFile(funDef.filepath, funDef.range);
       if (funcText.split("\n").length > 15) {
         let truncated = false;
@@ -259,14 +258,14 @@ export async function getDefinitionsForNode(
       break;
     }
     case "variable_declarator":
-      // variable assignment -> variable definition/type
-      // usages of the var that appear after the declaration
+      // 变量赋值 -> 变量定义/类型
+      // 出现在声明之后的变量使用
       break;
     case "impl_item":
-      // impl of trait -> trait definition
+      // trait 的实现 -> trait 定义
       break;
     case "new_expression":
-      // In 'new MyClass(...)', "MyClass" is the classNameNode
+      // 在 'new MyClass(...)' 中，“MyClass”是 classNameNode
       const classNameNode = node.children.find(
         (child) => child.type === "identifier",
       );
@@ -298,12 +297,12 @@ export async function getDefinitionsForNode(
 
       break;
     case "":
-      // function definition -> implementations?
+      // 函数定义 -> 实现？
       break;
   }
   return await Promise.all(
     ranges.map(async (rif) => {
-      // Convert the VS Code Range type to ours
+      // 将 VS Code Range 类型转换为我们的类型
       const range: Range = {
         start: {
           line: rif.range.start.line,
@@ -328,9 +327,9 @@ export async function getDefinitionsForNode(
 }
 
 /**
- * and other stuff not directly on the path:
- * - variables defined on line above
- * ...etc...
+ * 以及路径上不直接的其他内容：
+ * - 在上面一行定义的变量
+ * ...等等...
  */
 
 export const getDefinitionsFromLsp: GetLspDefinitionsFunction = async (
@@ -363,7 +362,7 @@ export const getDefinitionsFromLsp: GetLspDefinitionsFunction = async (
       score: 0.8,
     }));
   } catch (e) {
-    console.warn("Error getting definitions from LSP: ", e);
+    console.warn("从 LSP 获取定义时出错: ", e);
     return [];
   }
 };

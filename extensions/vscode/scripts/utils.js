@@ -11,6 +11,7 @@ const {
 const continueDir = path.join(__dirname, "..", "..", "..");
 
 function copyConfigSchema() {
+  // 复制配置模式文件
   fs.copyFileSync(
     "config_schema.json",
     path.join("..", "..", "docs", "static", "schemas", "config.json"),
@@ -26,51 +27,53 @@ function copyConfigSchema() {
       "config_schema.json",
     ),
   );
-  // Modify and copy for .continuerc.json
+  // 修改并复制 .continuerc.json
   const schema = JSON.parse(fs.readFileSync("config_schema.json", "utf8"));
   schema.definitions.SerializedContinueConfig.properties.mergeBehavior = {
     type: "string",
     enum: ["merge", "overwrite"],
     default: "merge",
-    title: "Merge behavior",
+    title: "合并行为",
     markdownDescription:
-      "If set to 'merge', .continuerc.json will be applied on top of config.json (arrays and objects are merged). If set to 'overwrite', then every top-level property of .continuerc.json will overwrite that property from config.json.",
+      "如果设置为 'merge'，.continuerc.json 将在 config.json 之上应用（数组和对象将被合并）。如果设置为 'overwrite'，则 .continuerc.json 的每个顶级属性将覆盖 config.json 中的该属性。",
   };
   fs.writeFileSync("continue_rc_schema.json", JSON.stringify(schema, null, 2));
 }
 
 function copyTokenizers() {
+  // 复制 llamaTokenizerWorkerPool 文件
   fs.copyFileSync(
     path.join(__dirname, "../../../core/llm/llamaTokenizerWorkerPool.mjs"),
     path.join(__dirname, "../out/llamaTokenizerWorkerPool.mjs"),
   );
-  console.log("[info] Copied llamaTokenizerWorkerPool");
+  console.log("[info] 已复制 llamaTokenizerWorkerPool");
 
+  // 复制 llamaTokenizer 文件
   fs.copyFileSync(
     path.join(__dirname, "../../../core/llm/llamaTokenizer.mjs"),
     path.join(__dirname, "../out/llamaTokenizer.mjs"),
   );
-  console.log("[info] Copied llamaTokenizer");
+  console.log("[info] 已复制 llamaTokenizer");
 }
 
 function installNodeModules() {
-  // Make sure we are in the right directory
+  // 确保在正确的目录中
   if (!process.cwd().endsWith("vscode")) {
     process.chdir(path.join(continueDir, "extensions", "vscode"));
   }
 
-  // Install node_modules //
+  // 安装 node_modules
   execCmdSync("npm install");
-  console.log("[info] npm install in extensions/vscode completed");
+  console.log("[info] extensions/vscode 中的 npm install 已完成");
 
   process.chdir(path.join(continueDir, "gui"));
 
   execCmdSync("npm install");
-  console.log("[info] npm install in gui completed");
+  console.log("[info] gui 中的 npm install 已完成");
 }
 
 async function buildGui(isGhAction) {
-  // Make sure we are in the right directory
+  // 确保在正确的目录中
   if (!process.cwd().endsWith("gui")) {
     process.chdir(path.join(continueDir, "gui"));
   }
@@ -78,7 +81,7 @@ async function buildGui(isGhAction) {
     execCmdSync("npm run build");
   }
 
-  // Copy over the dist folder to the JetBrains extension //
+  // 将 dist 文件夹复制到 JetBrains 扩展中
   const intellijExtensionWebviewPath = path.join(
     "..",
     "extensions",
@@ -98,7 +101,7 @@ async function buildGui(isGhAction) {
     ncp("dist", intellijExtensionWebviewPath, (error) => {
       if (error) {
         console.warn(
-          "[error] Error copying React app build to JetBrains extension: ",
+          "[error] 将 React 应用构建复制到 JetBrains 扩展时出错: ",
           error,
         );
         reject(error);
@@ -107,44 +110,44 @@ async function buildGui(isGhAction) {
     });
   });
 
-  // Put back index.html
+  // 放回 index.html
   if (fs.existsSync(indexHtmlPath)) {
     rimrafSync(indexHtmlPath);
   }
   fs.copyFileSync("tmp_index.html", indexHtmlPath);
   fs.unlinkSync("tmp_index.html");
 
-  // Copy over other misc. files
+  // 复制其他杂项文件
   fs.copyFileSync(
     "../extensions/vscode/gui/onigasm.wasm",
     path.join(intellijExtensionWebviewPath, "onigasm.wasm"),
   );
 
-  console.log("[info] Copied gui build to JetBrains extension");
+  console.log("[info] 已将 gui 构建复制到 JetBrains 扩展");
 
-  // Then copy over the dist folder to the VSCode extension //
+  // 然后将 dist 文件夹复制到 VSCode 扩展中
   const vscodeGuiPath = path.join("../extensions/vscode/gui");
   fs.mkdirSync(vscodeGuiPath, { recursive: true });
   await new Promise((resolve, reject) => {
     ncp("dist", vscodeGuiPath, (error) => {
       if (error) {
         console.log(
-          "Error copying React app build to VSCode extension: ",
+          "将 React 应用构建复制到 VSCode 扩展时出错: ",
           error,
         );
         reject(error);
       } else {
-        console.log("Copied gui build to VSCode extension");
+        console.log("已将 gui 构建复制到 VSCode 扩展");
         resolve();
       }
     });
   });
 
   if (!fs.existsSync(path.join("dist", "assets", "index.js"))) {
-    throw new Error("gui build did not produce index.js");
+    throw new Error("gui 构建未生成 index.js");
   }
   if (!fs.existsSync(path.join("dist", "assets", "index.css"))) {
-    throw new Error("gui build did not produce index.css");
+    throw new Error("gui 构建未生成 index.css");
   }
 }
 
@@ -161,7 +164,7 @@ async function copyOnnxRuntimeFromNodeModules(target) {
       },
       (error) => {
         if (error) {
-          console.warn("[info] Error copying onnxruntime-node files", error);
+          console.warn("[info] 复制 onnxruntime-node 文件时出错", error);
           reject(error);
         }
         resolve();
@@ -169,7 +172,7 @@ async function copyOnnxRuntimeFromNodeModules(target) {
     );
   });
   if (target) {
-    // If building for production, only need the binaries for current platform
+    // 如果是生产构建，只需要当前平台的二进制文件
     try {
       if (!target.startsWith("darwin")) {
         rimrafSync(path.join(__dirname, "../bin/napi-v3/darwin"));
@@ -181,7 +184,7 @@ async function copyOnnxRuntimeFromNodeModules(target) {
         rimrafSync(path.join(__dirname, "../bin/napi-v3/win32"));
       }
 
-      // Also don't want to include cuda/shared/tensorrt binaries, they are too large
+      // 也不想包含 cuda/shared/tensorrt 二进制文件，它们太大了
       if (target.startsWith("linux")) {
         const filesToRemove = [
           "libonnxruntime_providers_cuda.so",
@@ -200,10 +203,10 @@ async function copyOnnxRuntimeFromNodeModules(target) {
         });
       }
     } catch (e) {
-      console.warn("[info] Error removing unused binaries", e);
+      console.warn("[info] 移除未使用的二进制文件时出错", e);
     }
   }
-  console.log("[info] Copied onnxruntime-node");
+  console.log("[info] 已复制 onnxruntime-node");
 }
 
 async function copyTreeSitterWasms() {
@@ -217,7 +220,7 @@ async function copyTreeSitterWasms() {
       { dereference: true },
       (error) => {
         if (error) {
-          console.warn("[error] Error copying tree-sitter-wasm files", error);
+          console.warn("[error] 复制 tree-sitter-wasm 文件时出错", error);
           reject(error);
         } else {
           resolve();
@@ -230,7 +233,7 @@ async function copyTreeSitterWasms() {
     path.join(__dirname, "../../../core/vendor/tree-sitter.wasm"),
     path.join(__dirname, "../out/tree-sitter.wasm"),
   );
-  console.log("[info] Copied tree-sitter wasms");
+  console.log("[info] 已复制 tree-sitter wasms");
 }
 
 async function copyTreeSitterTagQryFiles() {
@@ -242,13 +245,13 @@ async function copyTreeSitterTagQryFiles() {
   //   path.join(__dirname, "../out/tag-qry"),
   //   (error) => {
   //     if (error)
-  //       console.warn("Error copying code-highlighter tag-qry files", error);
+  //       console.warn("复制 code-highlighter tag-qry 文件时出错", error);
   //   },
   // );
 }
 
 async function copyNodeModules() {
-  // Copy node_modules for pre-built binaries
+  // 复制 node_modules 以获取预构建的二进制文件
   process.chdir(path.join(continueDir, "extensions", "vscode"));
 
   const NODE_MODULES_TO_COPY = [
@@ -271,10 +274,10 @@ async function copyNodeModules() {
             { dereference: true },
             function (error) {
               if (error) {
-                console.error(`[error] Error copying ${mod}`, error);
+                console.error(`[error] 复制 ${mod} 时出错`, error);
                 reject(error);
               } else {
-                console.log(`[info] Copied ${mod}`);
+                console.log(`[info] 已复制 ${mod}`);
                 resolve();
               }
             },
@@ -283,15 +286,15 @@ async function copyNodeModules() {
     ),
   );
 
-  console.log(`[info] Copied ${NODE_MODULES_TO_COPY.join(", ")}`);
+  console.log(`[info] 已复制 ${NODE_MODULES_TO_COPY.join(", ")}`);
 }
 
 // async function downloadEsbuildBinary(isGhAction, isArm, target) {
 //   process.chdir(path.join(continueDir, "extensions", "vscode"));
 
 //   if (isGhAction && isArm) {
-//     // Download and unzip esbuild
-//     console.log("[info] Downloading pre-built esbuild binary");
+//     // 下载并解压 esbuild
+//     console.log("[info] 下载预构建的 esbuild 二进制文件");
 //     rimrafSync("node_modules/@esbuild");
 //     fs.mkdirSync("node_modules/@esbuild", { recursive: true });
 //     execCmdSync(
@@ -300,8 +303,8 @@ async function copyNodeModules() {
 //     execCmdSync(`cd node_modules/@esbuild && unzip esbuild.zip`);
 //     fs.unlinkSync("node_modules/@esbuild/esbuild.zip");
 //   } else {
-//     // Download esbuild from npm in tmp and copy over
-//     console.log("npm installing esbuild binary");
+//     // 从 npm 下载 esbuild 到 tmp 并复制
+//     console.log("npm 安装 esbuild 二进制文件");
 //     await installNodeModuleInTempDirAndCopyToCurrent(
 //       "esbuild@0.17.19",
 //       "@esbuild",
@@ -310,7 +313,7 @@ async function copyNodeModules() {
 // }
 
 async function downloadEsbuildBinary(target) {
-  console.log("[info] Downloading pre-built esbuild binary");
+  console.log("[info] 下载预构建的 esbuild 二进制文件");
   rimrafSync("out/node_modules/@esbuild");
   fs.mkdirSync(`out/node_modules/@esbuild/${target}/bin`, { recursive: true });
   fs.mkdirSync(`out/tmp`, { recursive: true });
@@ -330,7 +333,7 @@ async function downloadEsbuildBinary(target) {
   }[target];
   execCmdSync(`curl -L -o out/tmp/esbuild.tgz ${downloadUrl}`);
   execCmdSync("cd out/tmp && tar -xvzf esbuild.tgz");
-  // Copy the installed package back to the current directory
+  // 将安装的包复制回当前目录
   let tmpPath = "out/tmp/package/bin";
   let outPath = `out/node_modules/@esbuild/${target}/bin`;
   if (target.startsWith("win")) {
@@ -345,7 +348,7 @@ async function downloadEsbuildBinary(target) {
       { dereference: true },
       (error) => {
         if (error) {
-          console.error(`[error] Error copying esbuild package`, error);
+          console.error(`[error] 复制 esbuild 包时出错`, error);
           reject(error);
         } else {
           resolve();
@@ -357,7 +360,7 @@ async function downloadEsbuildBinary(target) {
 }
 
 async function downloadSqliteBinary(target) {
-  console.log("[info] Downloading pre-built sqlite3 binary");
+  console.log("[info] 下载预构建的 sqlite3 二进制文件");
   rimrafSync("../../core/node_modules/sqlite3/build");
   const downloadUrl = {
     "darwin-arm64":
@@ -382,7 +385,7 @@ async function downloadSqliteBinary(target) {
 
 async function copySqliteBinary() {
   process.chdir(path.join(continueDir, "extensions", "vscode"));
-  console.log("[info] Copying sqlite node binding from core");
+  console.log("[info] 从 core 复制 sqlite 节点绑定");
   await new Promise((resolve, reject) => {
     ncp(
       path.join(__dirname, "../../../core/node_modules/sqlite3/build"),
@@ -390,7 +393,7 @@ async function copySqliteBinary() {
       { dereference: true },
       (error) => {
         if (error) {
-          console.warn("[error] Error copying sqlite3 files", error);
+          console.warn("[error] 复制 sqlite3 文件时出错", error);
           reject(error);
         } else {
           resolve();
@@ -401,7 +404,7 @@ async function copySqliteBinary() {
 }
 
 async function downloadRipgrepBinary(target) {
-  console.log("[info] Downloading pre-built ripgrep binary");
+  console.log("[info] 下载预构建的 ripgrep 二进制文件");
   rimrafSync("node_modules/@vscode/ripgrep/bin");
   fs.mkdirSync("node_modules/@vscode/ripgrep/bin", { recursive: true });
   4;
@@ -438,37 +441,37 @@ async function downloadRipgrepBinary(target) {
 }
 
 async function installNodeModuleInTempDirAndCopyToCurrent(packageName, toCopy) {
-  console.log(`Copying ${packageName} to ${toCopy}`);
-  // This is a way to install only one package without npm trying to install all the dependencies
-  // Create a temporary directory for installing the package
+  console.log(`复制 ${packageName} 到 ${toCopy}`);
+  // 这是一种只安装一个包而不让 npm 尝试安装所有依赖项的方法
+  // 创建一个临时目录来安装包
   const adjustedName = packageName.replace(/@/g, "").replace("/", "-");
 
   const tempDir = `/tmp/continue-node_modules-${adjustedName}`;
   const currentDir = process.cwd();
 
-  // Remove the dir we will be copying to
+  // 移除我们将要复制到的目录
   rimrafSync(`node_modules/${toCopy}`);
 
-  // Ensure the temporary directory exists
+  // 确保临时目录存在
   fs.mkdirSync(tempDir, { recursive: true });
 
   try {
-    // Move to the temporary directory
+    // 移动到临时目录
     process.chdir(tempDir);
 
-    // Initialize a new package.json and install the package
+    // 初始化一个新的 package.json 并安装包
     execCmdSync(`npm init -y && npm i -f ${packageName} --no-save`);
 
     console.log(
-      `Contents of: ${packageName}`,
+      `内容: ${packageName}`,
       fs.readdirSync(path.join(tempDir, "node_modules", toCopy)),
     );
 
-    // Without this it seems the file isn't completely written to disk
-    // Ideally we validate file integrity in the validation at the end
+    // 没有这个，文件似乎没有完全写入磁盘
+    // 理想情况下，我们在最后的验证中验证文件完整性
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Copy the installed package back to the current directory
+    // 将安装的包复制回当前目录
     await new Promise((resolve, reject) => {
       ncp(
         path.join(tempDir, "node_modules", toCopy),
@@ -477,7 +480,7 @@ async function installNodeModuleInTempDirAndCopyToCurrent(packageName, toCopy) {
         (error) => {
           if (error) {
             console.error(
-              `[error] Error copying ${packageName} package`,
+              `[error] 复制 ${packageName} 包时出错`,
               error,
             );
             reject(error);
@@ -488,10 +491,10 @@ async function installNodeModuleInTempDirAndCopyToCurrent(packageName, toCopy) {
       );
     });
   } finally {
-    // Clean up the temporary directory
+    // 清理临时目录
     // rimrafSync(tempDir);
 
-    // Return to the original directory
+    // 返回原始目录
     process.chdir(currentDir);
   }
 }

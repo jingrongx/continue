@@ -1,5 +1,5 @@
 /**
- * If we wanted to run or use another language server from our extension, this is how we would do it.
+ * 如果我们想从扩展中运行或使用另一个语言服务器，这就是我们如何做到的。
  */
 
 import * as path from "node:path";
@@ -33,7 +33,7 @@ export async function makeRequest(method: string, param: any): Promise<any> {
           resolve(client.sendRequest(method, param));
         } else if (e.newState === State.Stopped) {
           stateListener.dispose();
-          reject(new Error("Language server stopped unexpectedly"));
+          reject(new Error("语言服务器意外停止"));
         }
       });
     });
@@ -76,14 +76,14 @@ async function startPylance(context: ExtensionContext) {
   }
   const { path: lsPath } = await pylance.exports.languageServerFolder();
 
-  // The server is implemented in node
+  // 服务器在 node 中实现
   const serverModule = context.asAbsolutePath(lsPath);
-  // The debug options for the server
-  // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
+  // 服务器的调试选项
+  // --inspect=6009: 以 Node 的 Inspector 模式运行服务器，以便 VS Code 可以附加到服务器进行调试
   const debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
 
-  // If the extension is launched in debug mode then the debug server options are used
-  // Otherwise the run options are used
+  // 如果扩展在调试模式下启动，则使用调试服务器选项
+  // 否则使用运行选项
   const serverOptions: ServerOptions = {
     run: { module: serverModule, transport: TransportKind.ipc },
     debug: {
@@ -93,23 +93,22 @@ async function startPylance(context: ExtensionContext) {
     },
   };
 
-  // Options to control the language client
+  // 控制语言客户端的选项
   const clientOptions: LanguageClientOptions = {
-    // Register the server for plain text documents
+    // 为纯文本文档注册服务器
     documentSelector: [{ scheme: "file", language: "python" }],
     synchronize: {
-      // Notify the server about file changes to '.clientrc files contained in the workspace
+      // 通知服务器工作区中包含的 '.clientrc 文件的更改
       fileEvents: workspace.createFileSystemWatcher("**/.clientrc"),
     },
   };
 
-  // Create the language client and start the client.
+  // 创建语言客户端并启动客户端。
   client = new LanguageClient(
     "languageServerExample",
-    "Language Server Example",
+    "语言服务器示例",
     serverOptions,
     clientOptions,
   );
   return client;
 }
-

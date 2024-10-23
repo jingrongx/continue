@@ -64,7 +64,7 @@ export class VerticalDiffHandler implements vscode.Disposable {
     );
 
     const disposable = vscode.window.onDidChangeActiveTextEditor((editor) => {
-      // When we switch away and back to this editor, need to re-draw decorations
+      // 当我们切换到这个编辑器时，需要重新绘制装饰
       if (editor?.document.uri.fsPath === this.filepath) {
         this.editor = editor;
         this.redDecorationManager.applyToNewEditor(editor);
@@ -72,7 +72,7 @@ export class VerticalDiffHandler implements vscode.Disposable {
         this.updateIndexLineDecorations();
         this.refreshCodeLens();
 
-        // Handle any lines received while editor was closed
+        // 处理编辑器关闭时接收到的任何行
         this.queueDiffLine(undefined);
       }
     });
@@ -88,7 +88,7 @@ export class VerticalDiffHandler implements vscode.Disposable {
   insertedInCurrentBlock = 0;
 
   private async insertDeletionBuffer() {
-    // Don't remove trailing whitespace line
+    // 不要删除尾随空白行
     const totalDeletedContent = this.deletionBuffer.join("\n");
     if (
       totalDeletedContent === "" &&
@@ -113,7 +113,7 @@ export class VerticalDiffHandler implements vscode.Disposable {
       return;
     }
 
-    // Insert the block of deleted lines
+    // 插入删除行块
     await this.insertTextAboveLine(
       this.currentLineIndex - this.insertedInCurrentBlock,
       totalDeletedContent,
@@ -122,13 +122,13 @@ export class VerticalDiffHandler implements vscode.Disposable {
       this.currentLineIndex - this.insertedInCurrentBlock,
       this.deletionBuffer.length,
     );
-    // Shift green decorations downward
+    // 向下移动绿色装饰
     this.greenDecorationManager.shiftDownAfterLine(
       this.currentLineIndex - this.insertedInCurrentBlock,
       this.deletionBuffer.length,
     );
 
-    // Update line index, clear buffer
+    // 更新行索引，清空缓冲区
     for (let i = 0; i < this.deletionBuffer.length; i++) {
       this.incrementCurrentLineIndex();
     }
@@ -150,7 +150,7 @@ export class VerticalDiffHandler implements vscode.Disposable {
       (editBuilder) => {
         const lineCount = this.editor.document.lineCount;
         if (index >= lineCount) {
-          // Append to end of file
+          // 添加到文件末尾
           editBuilder.insert(
             new vscode.Position(
               lineCount,
@@ -192,12 +192,12 @@ export class VerticalDiffHandler implements vscode.Disposable {
 
   private updateIndexLineDecorations() {
     if (this.options.instant) {
-      // We don't show progress on instant apply
+      // 我们不在即时应用中显示进度
       return;
     }
 
-    // Highlight the line at the currentLineIndex
-    // And lightly highlight all lines between that and endLine
+    // 高亮显示 currentLineIndex 处的行
+    // 并轻微高亮从该行到 endLine 的所有行
     if (this.currentLineIndex - this.newLinesAdded >= this.endLine) {
       this.editor.setDecorations(indexDecorationType, []);
       this.editor.setDecorations(belowIndexDecorationType, []);
@@ -222,7 +222,7 @@ export class VerticalDiffHandler implements vscode.Disposable {
   }
 
   public getLineDeltaBeforeLine(line: number) {
-    // Returns the number of lines removed from a file when the diff currently active is closed
+    // 返回当前活动的 diff 关闭时从文件中删除的行数
     let totalLineDelta = 0;
     for (const range of this.greenDecorationManager
       .getRanges()
@@ -310,7 +310,7 @@ export class VerticalDiffHandler implements vscode.Disposable {
       try {
         await this._handleDiffLine(line);
       } catch (e) {
-        // If editor is switched between calling _handleDiffLine and the edit actually being executed
+        // 如果在调用 _handleDiffLine 和实际执行编辑之间切换了编辑器
         this._diffLinesQueue.push(line);
         break;
       }
@@ -326,7 +326,7 @@ export class VerticalDiffHandler implements vscode.Disposable {
         this.incrementCurrentLineIndex();
         break;
       case "old":
-        // Add to deletion buffer and delete the line for now
+        // 添加到删除缓冲区并暂时删除该行
         this.deletionBuffer.push(diffLine.line);
         await this.deleteLinesAt(this.currentLineIndex);
         break;
@@ -340,7 +340,7 @@ export class VerticalDiffHandler implements vscode.Disposable {
 
   async run(diffLineGenerator: AsyncGenerator<DiffLine>) {
     try {
-      // As an indicator of loading
+      // 作为加载的指示器
       this.updateIndexLineDecorations();
 
       for await (const diffLine of diffLineGenerator) {
@@ -350,7 +350,7 @@ export class VerticalDiffHandler implements vscode.Disposable {
         await this.queueDiffLine(diffLine);
       }
 
-      // Clear deletion buffer
+      // 清空删除缓冲区
       await this.insertDeletionBuffer();
       this.clearIndexLineDecorations();
 
@@ -358,7 +358,7 @@ export class VerticalDiffHandler implements vscode.Disposable {
 
       this.options.onStatusUpdate("done");
 
-      // Reject on user typing
+      // 用户输入时拒绝
       // const listener = vscode.workspace.onDidChangeTextDocument((e) => {
       //   if (e.document.uri.fsPath === this.filepath) {
       //     this.clear(false);
@@ -378,10 +378,10 @@ export class VerticalDiffHandler implements vscode.Disposable {
     numRed: number,
   ) {
     if (numGreen > 0) {
-      // Delete the editor decoration
+      // 删除编辑器装饰
       this.greenDecorationManager.deleteRangeStartingAt(startLine + numRed);
       if (!accept) {
-        // Delete the actual lines
+        // 删除实际行
         await this.deleteLinesAt(startLine + numRed, numGreen);
       }
     }
@@ -391,22 +391,22 @@ export class VerticalDiffHandler implements vscode.Disposable {
         this.redDecorationManager.deleteRangeStartingAt(startLine);
 
       if (accept) {
-        // Delete the actual lines
+        // 删除实际行
         await this.deleteLinesAt(startLine, numRed);
       }
     }
 
-    // Shift everything below upward
+    // 向上移动下面的所有内容
     const offset = -(accept ? numRed : numGreen);
     this.redDecorationManager.shiftDownAfterLine(startLine, offset);
     this.greenDecorationManager.shiftDownAfterLine(startLine, offset);
 
-    // Shift the codelens objects
+    // 移动代码镜头对象
     this.shiftCodeLensObjects(startLine, offset);
   }
 
   private shiftCodeLensObjects(startLine: number, offset: number) {
-    // Shift the codelens objects
+    // 移动代码镜头对象
     const blocks =
       this.editorToVerticalDiffCodeLens
         .get(this.filepath)
@@ -427,17 +427,17 @@ export class VerticalDiffHandler implements vscode.Disposable {
     startLine: number,
     lineDelta: number,
   ) {
-    // Retrieve the diff blocks for the given file
+    // 检索给定文件的差异块
     const blocks = this.editorToVerticalDiffCodeLens.get(filepath);
     if (!blocks) {
       return;
     }
 
-    //update decorations
+    // 更新装饰
     this.redDecorationManager.shiftDownAfterLine(startLine, lineDelta);
     this.greenDecorationManager.shiftDownAfterLine(startLine, lineDelta);
 
-    //update code lens
+    // 更新代码镜头
     this.shiftCodeLensObjects(startLine, lineDelta);
   }
 }
