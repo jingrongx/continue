@@ -1,6 +1,6 @@
-# Changelog
+# 更新日志
 
-Separate changelogs are kept for each extension:
+每个扩展都有单独的更新日志：
 
-- [VS Code Extension](./extensions/vscode/CHANGELOG.md)
-- [JetBrains Extension](./extensions/intellij/CHANGELOG.md)
+- [VS Code 扩展](./extensions/vscode/CHANGELOG.md)
+- [JetBrains 扩展](./extensions/intellij/CHANGELOG.md)

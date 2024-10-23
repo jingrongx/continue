@@ -1,56 +1,56 @@
-# Codebase Indexing
+# 代码库索引
 
-This is a small Rust library for efficiently keeping a codebase index up to date.
+这是一个小型的 Rust 库，用于高效地保持代码库索引的更新。
 
-### How it works
+### 工作原理
 
-> Important definition: a _tag_ is a (workspace, branch, provider_id) pair that uniquely identifies an index. Since we use content-based addressing within the index, much of the data is shared for efficiency.
+> 重要定义：一个 _标签_ 是一个 (工作区, 分支, 提供者 ID) 的组合，唯一标识一个索引。由于我们在索引中使用基于内容的寻址，因此大部分数据是共享的，以提高效率。
 
-The output of the sync_results function is a list of 4 lists of tuples. Each tuple contains a file path and a hash of the file contents. The 4 lists are:
+`sync_results` 函数的输出是一个包含 4 个列表的列表，每个列表包含文件路径和文件内容哈希的元组。这 4 个列表是：
 
-1. Compute: Files that need to be newly computed or updated
-2. Delete: Files that need to be deleted from the index
-3. Add label: Files that exist in the index but need to have a label added for a new tag
-4. Remove label: Files that exist in the index but need to have a label removed
+1. 计算：需要新计算或更新的文件
+2. 删除：需要从索引中删除的文件
+3. 添加标签：在索引中存在但需要为新标签添加标签的文件
+4. 移除标签：在索引中存在但需要移除标签的文件
 
-The labels help us filter when retrieving results from an index like Meilisearch or Chroma. All ids of the items in these indices are the hash of the file contents (possibly plus a chunk index at the end).
+标签帮助我们在从 Meilisearch 或 Chroma 等索引中检索结果时进行过滤。这些索引中项目的所有 ID 都是文件内容的哈希（可能加上末尾的块索引）。
 
-The first time, a Merkle tree of the codebase folder is constructed, ignoring any files in .gitignore or .continueignore. Every file found will be returned as needing to be computed added to the index.
+第一次时，将构建代码库文件夹的 Merkle 树，忽略 `.gitignore` 或 `.continueignore` 中的任何文件。找到的每个文件都将被返回为需要计算并添加到索引中。
 
-Thereafter, the following steps are performed:
+之后，执行以下步骤：
 
-1. Load the previously computed merkle tree for the tag
-2. Compute the current merkle tree of the codebase
-3. Update the .last_sync file with current timestamp
-4. Save the new tree to disk
-5. Compute the diff of the trees, which tells you which files have been a) added or b) removed
-6. For each file added:
-   - If in the global cache, append it to `add_label`
-   - Otherwise, append it to `compute`
-7. For each file removed:
-   - If in the global cache, but only in rev_tags for this tag, append it to `delete`
-   - If in global cache for more than this tag, append it to `remove_label`
-   - Otherwise, ignore. This should never happen.
-8. Return (compute, delete, add_label, remove_label)
+1. 加载之前计算的标签的 Merkle 树
+2. 计算当前代码库的 Merkle 树
+3. 使用当前时间戳更新 `.last_sync` 文件
+4. 将新树保存到磁盘
+5. 计算树的差异，告诉你哪些文件已 a) 添加或 b) 删除
+6. 对于每个添加的文件：
+   - 如果在全局缓存中，将其附加到 `add_label`
+   - 否则，将其附加到 `compute`
+7. 对于每个删除的文件：
+   - 如果在全局缓存中，但仅在此标签的 `rev_tags` 中，将其附加到 `delete`
+   - 如果在全局缓存中超过此标签，将其附加到 `remove_label`
+   - 否则，忽略。这不应该发生。
+8. 返回 (compute, delete, add_label, remove_label)
 
-### Files created
+### 创建的文件
 
-Several files are stored and updated on disk in the ~/.continue/index folder to keep track of indexed files:
+在 `~/.continue/index` 文件夹中存储和更新多个文件，以跟踪已索引的文件：
 
-- `~/.continue/index/tags/<dir>/<branch>/<provider_id>/merkle_tree` - the last computed Merkle tree of the codebase for a given tag
-- `~/.continue/index/tags/<dir>/<branch>/<provider_id>/.last_sync` - the last time the tag was synced
-- The index cache contains a list of hashes that have already been computed both in general and per tag. These are always kept in sync.
-  - `~/.continue/index/.index_cache` - contains the global cache (flat file of hashes)
-  - `~/.continue/index/tags/<dir>/<branch>/<provider_id>/.index_cache` - contains the tag-specific cache (flat file of hashes)
-  - `~/.continue/index/rev_tags` - contains a mapping from hash to tags that the hash is currently indexed for. This is a directory of files, where each file is prefixed with the first 2 characters of the hash. The file is a JSON mapping from hash to list of tags.
+- `~/.continue/index/tags/<dir>/<branch>/<provider_id>/merkle_tree` - 给定标签的代码库的最后计算的 Merkle 树
+- `~/.continue/index/tags/<dir>/<branch>/<provider_id>/.last_sync` - 标签最后同步的时间
+- 索引缓存包含已计算的哈希列表，包括一般和每个标签。这些始终保持同步。
+  - `~/.continue/index/.index_cache` - 包含全局缓存（哈希的平面文件）
+  - `~/.continue/index/tags/<dir>/<branch>/<provider_id>/.index_cache` - 包含标签特定缓存（哈希的平面文件）
+  - `~/.continue/index/rev_tags` - 包含从哈希到当前索引的标签的映射。这是一个文件目录，每个文件以哈希的前两个字符为前缀。文件是一个 JSON 映射，从哈希到标签列表。
 
-### Files
+### 文件
 
-- `lib.rs` contains just the top-level function that is called by the Python bindings
-- `sync/merkle.rs` contains the Merkle tree implementation (for building and comparing trees)
-- `sync/mod.rs` contains the main sync logic, which handles maintenance of the on-disk database of which hashes are included in which tags
+- `lib.rs` 仅包含由 Python 绑定调用的顶级函数
+- `sync/merkle.rs` 包含 Merkle 树实现（用于构建和比较树）
+- `sync/mod.rs` 包含主要的同步逻辑，处理哪些哈希包含在哪些标签的磁盘数据库的维护
 
-### Current limitations:
+### 当前限制：
 
-- Only handles local files, so is not currently being used in situations where the Continue server is on a different machine from the IDE or the workspace (Remote SSH, WSL, or a Continue server being run for a team).
-- Currently not using stat to check for recent changes to files, is instaed re-calculating the entire Merkle tree on every IDE reload. This is fine for now since it only takes 0.2 seconds on the Continue codebase, but is a quick improvement we can make later.
+- 仅处理本地文件，因此目前不用于 Continue 服务器与 IDE 或工作区在不同机器上的情况（远程 SSH、WSL 或为团队运行的 Continue 服务器）。
+- 目前没有使用 stat 检查文件的最近更改，而是在每次 IDE 重新加载时重新计算整个 Merkle 树。现在这样做是可以的，因为在 Continue 代码库上只需 0.2 秒，但这是我们可以稍后快速改进的地方。
